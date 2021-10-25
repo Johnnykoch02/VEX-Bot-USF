@@ -22,8 +22,25 @@ void initialize() {
   // pros::lcd::register_btn1_cb(test_func);
   driveFrontLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   driveFrontRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  driveMiddleLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  driveMiddleRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  driveBackLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  driveMiddleRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   imu.tare();
+
 }
+
+void autonomous(void) {
+  pros::lcd::print(0, "infunc");
+  go();
+  while (true)
+  {
+    pros::lcd::set_text(0, "Angle: ");
+    pros::lcd::set_text(1, std::to_string(getAngle()));
+  }
+
+}
+
 
 
 void opcontrol() {
@@ -39,36 +56,3 @@ void opcontrol() {
     pros::delay(10);
   } //endwhile
 }
-
-
-void go() {
-  translate(1000,100);
-
-change_orientation(90);
-translate(1000,100);
-
-change_orientation(180);
-translate(1000,100);
-
-change_orientation(270);
-translate(1000,100);
-
-change_orientation(0);
-}
-
-void autonomous() {
-
-// pros::Task task_1(setDrive, 300);
-// pros::Task task_2(change_orientation, 180);
-
-  pros::delay(2000);
-  go();
-
-while(true){  
-  // mutex.take(10000);
-  pros::lcd::set_text(0, "Angle: ");
-  pros::lcd::set_text(1, std::to_string(getAngle()));
-
-}
-}
-

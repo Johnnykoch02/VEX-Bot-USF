@@ -7,7 +7,7 @@ extern pros::Motor driveBackLeft;
 extern pros::Motor driveBackRight;
 extern pros::Motor driveMiddleLeft;
 extern pros::Motor driveMiddleRight;
-extern pros::Mutex mutex;
+// extern pros::Mutex mutex;
 
 //Sensors
 extern pros:: Imu imu;
@@ -20,3 +20,5 @@ extern pros::Controller controller;
 // #define ANGLER_POT_VERTICAL 3000
 extern int pos[2][2];
 extern double getAngle();
+extern double toAngle();
+extern void go();

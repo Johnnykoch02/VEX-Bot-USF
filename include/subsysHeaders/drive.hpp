@@ -4,7 +4,7 @@
 void setDriveMotors();
 
 //Autonomous
-bool translate(int units, int voltage);
+void translate(int un, int vol);
 bool change_orientation(double theta);
 bool cal();
 

@@ -28,10 +28,52 @@ double getAngle(){
   // if(theta>180) {
   //   theta = theta-360.0;
   // }//endif
-  return theta; 
+  return theta;
 }
 
 void updatePos() {
   pos[0][0] = getAngle();
   // pos[1][0] =
+}
+
+float toAngle(float theta) {
+  return (float)((int)theta%360);
+}
+
+
+//GO
+
+void go() {
+//   translate(1000,100); BOX
+
+  int x[] = {100,100};
+  pros::Task task{[=] {
+          pros::lcd::set_text(4, "In Task One");
+            translate(1000,100);
+    }};
+  pros::Task task_2{[=] {
+            pros::lcd::set_text(4, "In Task Two");
+            change_orientation(180);
+            pros::lcd::set_text(4, "Done with task Two");
+    }};
+
+  // pros::Task::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
+  // pros::Task::task_create(translate(int)(int),{1000,100}, pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
+  // pros::Task::::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
+  // pros::Task::task_create(translate(int)(int),{1000,100}, pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
+  // pros::Task::::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
+  // pros::Task::task_create(translate(int)(int),{1000,100}, pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
+  // pros::Task::::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
+
+// change_orientation(90);
+// translate(1000,100);
+
+// change_orientation(180);
+// translate(1000,100);
+
+// change_orientation(270);
+// translate(1000,100);
+
+// change_orientation(0); ENDBOX
+
 }

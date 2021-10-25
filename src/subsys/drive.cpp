@@ -32,13 +32,14 @@ void setDriveMotors() {
   if (abs(rightJoystick)<5) rightJoystick = 0;
   setDrive(leftJoystick, rightJoystick);
 
-
 }
 
 // Autonomous
 
-bool translate(int units, int voltage) {
-  mutex.take(20000);
+void translate(int un, int vol) {
+  int units = un;
+  int voltage = vol;
+  // mutex.take(20000);
   int direction = abs(units)/units;
   // Reset motor encoders
   resetDriveEncoders();
@@ -51,28 +52,28 @@ bool translate(int units, int voltage) {
   setDrive(-10*direction, -10*direction);
   pros::delay(50);
   // Set drive back to neutral
-  mutex.give();
-  return true;
+  // mutex.give();
+  //  ```````````````1log()
 }
 
 bool change_orientation(double theta) {
-  mutex.take(20000);
+  // mutex.take(20000);
   float dtheta = getAngle()-theta;
   int direction = 0;
-  if (fabs(dtheta<180)) {
+  if (fabs(dtheta)< 180.0) {
     direction = 1 * (fabs(dtheta)/dtheta);
   }
   else {
     direction = -1 * (fabs(dtheta)/dtheta);
   }
-  
+
     while(fabs(getAngle()-theta) > 5.0) {
       setDrive(-50*direction,50*direction);
       pros::delay(10);
     }//ccw
     setDrive(10*direction,-10*direction);
     pros::delay(50);
-  mutex.give();
+  // mutex.give();
   return true;
 }
 
