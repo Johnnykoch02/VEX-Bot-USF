@@ -5,13 +5,12 @@ using namespace std;
 #ifndef PriorityQueue_h
 #define PriorityQueue_h
 
-
+template <class T>
 class PriorityQueue {
 private:
   //
-  int front;
-  int rear;
-  linkedlist pq;
+
+  linkedlist<T> pq;
 
 public:
   PriorityQueue();

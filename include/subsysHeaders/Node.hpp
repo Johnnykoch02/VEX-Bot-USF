@@ -1,29 +1,31 @@
-
 #ifndef Node_h
 #define Node_h
+#include "main.h"
 
-template <typename T>
+template <class T>
 class Node {
 
-    Node prev;
-    Node next;
+    Node *prev;
+    Node *next;
     int priority;
     T data;
 
 public:
 
-  Node(T data, int priority, Node p, Node n);
-  Node getNext();
-  Node getPrev();
+  Node(T data, int priority, Node<T> p, Node<T> n);
+  Node(T data, int priority);
+  Node* getNext();
+  Node* getPrev();
   bool hasPrev();
   bool hasNext();
-  void setPrev(Node p);
-  void setNext(Node n);
+  void setPrev(Node<T> p);
+  void setNext(Node<T> n);
   void setData(T data);
   T getData();
-  friend ostream &operator<<( ostream &stream, const Node &node) {
-      stream << "Node " << &node << ":" << endl;
-      stream << data << endl;
+  int getPriority();
+  friend std::ostream &operator<<(std::ostream &stream, const Node &node) {
+      stream << "Node " << &node << ":" << std::endl;
+      stream << node->data << std::endl;
       return stream;
   }
 };

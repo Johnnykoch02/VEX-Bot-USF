@@ -1,6 +1,7 @@
 #include "main.h"
 #include "subsysheaders/PriorityQueue.hpp"
 
+template <class T>
 PriorityQueue::PriorityQueue() {
 
 }
