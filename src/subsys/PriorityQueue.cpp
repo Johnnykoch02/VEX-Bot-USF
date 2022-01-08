@@ -2,14 +2,32 @@
 #include "subsysheaders/PriorityQueue.hpp"
 
 template <class T>
-PriorityQueue::PriorityQueue() {
+PriorityQueue<T>::PriorityQueue() {
 
 }
 
+template <class T>
+bool PriorityQueue<T>::isEmpty() {
+    
+}
 
-bool PriorityQueue::isEmpty(){return pq[front] == NULL;}
-void PriorityQueue::enqueue(T data, int priority) {
+
+template <class T>
+void PriorityQueue<T>::enqueue(T data, int priority) {
   
 }
-T PriorityQueue::deque();
-T PriorityQueue::peek();
+
+template <class T>
+T* PriorityQueue<T>::deque() {
+
+}
+
+template <class T>
+T* PriorityQueue<T>::peek() {
+
+}
+
+template <class T>
+T* PriorityQueue<T>::get() {
+
+}
