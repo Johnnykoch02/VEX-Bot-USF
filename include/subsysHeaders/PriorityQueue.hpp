@@ -10,11 +10,12 @@ template <class T>
 class PriorityQueue {
 private:
 
-  linkedlist<T> pq;
+  linkedlist<T> *pq;
 
 public:
   PriorityQueue();
   bool isEmpty();
+  void deque_index(int index);
   void enqueue(T* data, int priority);
   T* get(int index);
   T* deque();

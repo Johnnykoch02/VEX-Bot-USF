@@ -1,31 +1,39 @@
 #ifndef Node_h
 #define Node_h
-#include "main.h"
+
+//#ifdef __cplusplus
+#include <iostream>
+#include <string>
+//#endif
+
+using namespace std;
+
 
 template <class T>
 class Node {
-
-    Node *prev;
-    Node *next;
-    int priority;
-    T data;
+    Node<T> *prev;
+    Node<T> *next;
+    int16_t priority;
+    T *data;
 
 public:
 
-  Node(T data, int priority, Node<T> p, Node<T> n);
-  Node(T data, int priority);
+  Node();
+  ~Node();
+  Node(T *data, int priority, Node<T> *p, Node<T> *n);
+  Node(T *data, int priority);
   Node* getNext();
   Node* getPrev();
   bool hasPrev();
   bool hasNext();
-  void setPrev(Node<T> p);
-  void setNext(Node<T> n);
-  void setData(T data);
-  T getData();
-  int getPriority();
-  friend std::ostream &operator<<(std::ostream &stream, const Node &node) {
-      stream << "Node " << &node << ":" << std::endl;
-      stream << node->data << std::endl;
+  void setPrev(Node<T> *p);
+  void setNext(Node<T> *n);
+  void setData(T* data);
+  T *getData();
+  int16_t getPriority();
+  friend ostream &operator<<(ostream &stream, const Node<T> &node) {
+      stream << "\tNode " << &node << ":" << endl;
+      stream << "\t" << *node.data <<"\t Priority: " << node.priority;
       return stream;
   }
 };

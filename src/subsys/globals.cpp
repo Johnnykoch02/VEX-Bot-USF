@@ -41,6 +41,22 @@ float toAngle(float theta) {
 }
 
 
+int[] params(string params, int arg_num) {
+  int returnValue[arg_num];
+  int currentIndex = 0;
+  string curr = "";
+  /* Loop over String, append to curr, then append to array based on comma delimiter */
+  for (int i = 0; i < params.length(); i++) {
+    /* Primary Seperator: checks first */
+    if (char_traits::eq(curr[i], ',')) {
+      returnValue[currentIndex] = (int) curr;
+      curr = "";
+    }
+  }
+  
+ }
+
+
 //GO
 
 void go() {

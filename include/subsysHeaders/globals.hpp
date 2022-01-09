@@ -1,5 +1,6 @@
 #include "main.h"
 
+using namespace std;
 //MOTORS
 extern pros:: Motor driveFrontLeft;
 extern pros:: Motor driveFrontRight;
@@ -22,3 +23,5 @@ extern int pos[2][2];
 extern double getAngle();
 extern double toAngle();
 extern void go();
+
+extern int[] params(string params, int arg_num);
