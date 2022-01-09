@@ -48,11 +48,21 @@ int[] params(string params, int arg_num) {
   /* Loop over String, append to curr, then append to array based on comma delimiter */
   for (int i = 0; i < params.length(); i++) {
     /* Primary Seperator: checks first */
-    if (char_traits::eq(curr[i], ',')) {
+    if (char_traits::eq(params[i], ',')) {
       returnValue[currentIndex] = (int) curr;
+      currentIndex++;
       curr = "";
     }
+    else {
+      curr+= params[i];
+    }
   }
+  /* Is there an item we havent added? */
+  if (currentIndex < arg_num) {
+     returnValue[currentIndex] = (int) curr;
+  }
+
+  return returnValue;
   
  }
 
