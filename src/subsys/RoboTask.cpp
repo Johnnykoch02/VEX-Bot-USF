@@ -1,0 +1,33 @@
+#include "main.h"
+#include "subsysheaders/RoboTask.hpp"
+
+
+
+RoboTask::RoboTask(RoboTask *task) {
+    this->x = task->x;
+    this->y = task->y;
+    this->intake = task->intak
+    this->lift = task->lift;
+}
+
+RoboTask::RoboTask(RoboTask task) {
+    this->x = task.x;
+    this->y = task.y;
+    this->intake = task.intake;
+    this->lift = task.lift;
+}
+
+RoboTask::RoboTask(float x, float y, bool lift, bool intake) {
+    this->x = x;
+    this->y = y;
+    this->intake = intake;
+    this->lift = lift;
+}
+void RoboTask::init() {
+
+}
+
+void RoboTask::update() {
+    /* This function is designed to work with PID to get to the target values,
+        and update the finishedFlag according to reaching the target. */
+}

@@ -1,8 +1,10 @@
 #include "main.h"
 
 // Helper Functions
-void setDrive(int left, int right) {
-  driveFrontLeft = left;
+void setDrive(int leftPct, int leftDir,int rightPct, int rightDir) {
+  int left = (int) ((leftPct/100) * leftDir * MAX_VOLTAGE);
+  int right = (int) ((leftPct/100) * leftDir * MAX_VOLTAGE);
+  driveFrontLeft.move_voltage();
   driveFrontRight = right;
   driveBackLeft = left;
   driveBackRight = right;

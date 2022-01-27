@@ -14,13 +14,14 @@ pros:: Imu imu(12);
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 //MUTEX
-pros::Mutex mutex;
+// pros::Mutex mutex;
 
-//MISC
+// Global Variables
 
-int pos[2][2] = {
-  {0, 0}, // Theta (qngle we are facing compared to the unit circle), second value is undefined.
-  {0, 0} // Pos x Coordinate on plane, Pos y Coordinate on plane
+
+float roboMatrix[2][2] = {
+  {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is undefined.
+  {0.0 0.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
 };
 
 double getAngle(){
@@ -33,7 +34,9 @@ double getAngle(){
 
 void updatePos() {
   pos[0][0] = getAngle();
-  // pos[1][0] =
+  /* Here is where you need to use Trig, and the PID that you havent wrote yet to 
+      calculate where you are in the world */
+
 }
 
 float toAngle(float theta) {
@@ -41,47 +44,47 @@ float toAngle(float theta) {
 }
 
 
-int[] params(string params, int arg_num) {
-  int returnValue[arg_num];
-  int currentIndex = 0;
-  string curr = "";
-  /* Loop over String, append to curr, then append to array based on comma delimiter */
-  for (int i = 0; i < params.length(); i++) {
-    /* Primary Seperator: checks first */
-    if (char_traits::eq(params[i], ',')) {
-      returnValue[currentIndex] = (int) curr;
-      currentIndex++;
-      curr = "";
-    }
-    else {
-      curr+= params[i];
-    }
-  }
-  /* Is there an item we havent added? */
-  if (currentIndex < arg_num) {
-     returnValue[currentIndex] = (int) curr;
-  }
-
-  return returnValue;
+// int[] params(string params, int arg_num) {
+//   int returnValue[arg_num];
+//   int currentIndex = 0;
+//   string curr = "";
+//   /* Loop over String, append to curr, then append to array based on comma delimiter */
+//   for (int i = 0; i < params.length(); i++) {
+//     /* Primary Seperator: checks first */
+//     if (char_traits::eq(params[i], ',')) {
+//       returnValue[currentIndex] = (int) curr;
+//       currentIndex++;
+//       curr = "";
+//     }
+//     else {
+//       curr+= params[i];
+//     }
+//   }
+//   /* Is there an item we havent added? */
+//   if (currentIndex < arg_num) {
+//      returnValue[currentIndex] = (int) curr;
+//   }
   
- }
+//   return returnValue;
+  
+//  }
 
 
-//GO
+// //GO
 
-void go() {
-//   translate(1000,100); BOX
+// void go() {
+// //   translate(1000,100); BOX
 
-  int x[] = {100,100};
-  pros::Task task{[=] {
-          pros::lcd::set_text(4, "In Task One");
-            translate(1000,100);
-    }};
-  pros::Task task_2{[=] {
-            pros::lcd::set_text(4, "In Task Two");
-            change_orientation(180);
-            pros::lcd::set_text(4, "Done with task Two");
-    }};
+//   int x[] = {100,100};
+//   pros::Task task{[=] {
+//           pros::lcd::set_text(4, "In Task One");
+//             translate(1000,100);
+//     }};
+//   pros::Task task_2{[=] {
+//             pros::lcd::set_text(4, "In Task Two");
+//             change_orientation(180);
+//             pros::lcd::set_text(4, "Done with task Two");
+//     }};
 
   // pros::Task::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
   // pros::Task::task_create(translate(int)(int),{1000,100}, pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");

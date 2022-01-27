@@ -18,6 +18,10 @@ extern pros:: Imu imu;
 extern pros::Controller controller;
 
 //Misc
+extern const int MAX_VOLTAGE = 12000;
+extern const int MATRIX_LOCATION = 1;
+extern const int ROBO_X = 0;
+extern const int ROBO_Y = 1;
 // #define ANGLER_POT_VERTICAL 3000
 extern int pos[2][2];
 extern double getAngle();
