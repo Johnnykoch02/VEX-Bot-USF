@@ -1,6 +1,6 @@
 #pragma once
 #include "main.h"
-
+#include "TaskManager.hpp"
 using namespace std;
 // Control Softwares
 extern TaskManager task_manager;
