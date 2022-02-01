@@ -1,31 +1,39 @@
+#pragma once
 #include "main.h"
 
 using namespace std;
+// Control Softwares
+extern TaskManager task_manager;
+
 //MOTORS
-extern pros:: Motor driveFrontLeft;
-extern pros:: Motor driveFrontRight;
+extern pros::Motor driveFrontLeft;
+extern pros::Motor driveFrontRight;
 extern pros::Motor driveBackLeft;
 extern pros::Motor driveBackRight;
 extern pros::Motor driveMiddleLeft;
 extern pros::Motor driveMiddleRight;
-// extern pros::Mutex mutex;
+
+
+
 
 //Sensors
-extern pros:: Imu imu;
+extern pros::Imu imu;
 
 
 //Controllers
 extern pros::Controller controller;
 
 //Misc
-extern const int MAX_VOLTAGE = 12000;
-extern const int MATRIX_LOCATION = 1;
-extern const int ROBO_X = 0;
-extern const int ROBO_Y = 1;
+extern int const MAX_VOLTAGE;
+extern int const MATRIX_LOCATION;
+extern int const ROBO_X;
+extern int const ROBO_Y;
+
+
 // #define ANGLER_POT_VERTICAL 3000
-extern int pos[2][2];
+extern float roboMatrix[2][2];
 extern double getAngle();
 extern double toAngle();
 extern void go();
 
-extern int[] params(string params, int arg_num);
+// extern int[] params(string params, int arg_num);

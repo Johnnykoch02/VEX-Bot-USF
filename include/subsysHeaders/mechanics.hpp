@@ -1,10 +1,11 @@
+#pragma once
 #include "main.h"
 
 //Driver
 void setDriveMotors();
 
 //Autonomous
-void translate(int un, int vol); // Changing These
+bool translate(int un, int vol); // Changing These
 bool change_orientation(double theta);
 bool cal();
 

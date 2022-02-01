@@ -11,7 +11,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
+#pragma once
 #ifndef _PROS_MAIN_H_
 #define _PROS_MAIN_H_
 
@@ -73,16 +73,17 @@ void autonomous(void);
 #endif
 
 #ifdef __cplusplus
-#include "subsysHeaders/lift.hpp"
-#include "subsysHeaders/angler.hpp"
 #include "subsysHeaders/mechanics.hpp"
 #include "subsysHeaders/globals.hpp"
-#include "subsysHeaders/intake.hpp"
 // #include "opcontrol.hpp"
 // #include "initialize.hpp"
 // #include "autonomous.hpp"
-// #include "subsysHeaders/Events/actionControl.hpp"
-// #include "subsysHeaders/Events/iEvent.hpp"
+#include "subsysHeaders/TaskManager.hpp"
+#include "subsysHeaders/RoboTask.hpp"
+#include "subsysHeaders/PriorityQueue.hpp"
+#include "subsysHeaders/Node.hpp"
+#include "subsysHeaders/linkedlist.hpp"
+
 /**
  * You can add C++-only headers here
  */

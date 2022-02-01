@@ -4,12 +4,12 @@
 void setDrive(int leftPct, int leftDir,int rightPct, int rightDir) {
   int left = (int) ((leftPct/100) * leftDir * MAX_VOLTAGE);
   int right = (int) ((leftPct/100) * leftDir * MAX_VOLTAGE);
-  driveFrontLeft.move_voltage();
-  driveFrontRight = right;
-  driveBackLeft = left;
-  driveBackRight = right;
-  driveMiddleLeft = left;
-  driveMiddleRight = right;
+  driveFrontLeft.move_voltage(left);
+  driveFrontRight.move_voltage(right);
+  driveBackLeft.move_voltage(left);
+  driveBackRight.move_voltage(right);
+  driveMiddleLeft.move_voltage(left);
+  driveMiddleRight.move_voltage(right);
 }
 
 void resetDriveEncoders() {
@@ -38,7 +38,7 @@ void setDriveMotors() {
 
 // Autonomous
 
-void translate(int un, int vol) {
+bool translate(int units, int voltage) {
   int units = un;
   int voltage = vol;
   // mutex.take(20000);
@@ -54,9 +54,10 @@ void translate(int un, int vol) {
   setDrive(-10*direction, -10*direction);
   pros::delay(50);
   // Set drive back to neutral
-  // mutex.give();
-  //  ```````````````1log()
+  return true;
 }
+
+
 
 bool change_orientation(double theta) {
   // mutex.take(20000);

@@ -42,3 +42,7 @@ template <class T>
 T* PriorityQueue<T>::get(int index) {
     return this->pq->get(index);
 }
+template <class T>
+void PriorityQueue<T>::deque_all() {
+    this->pq->clear();
+}

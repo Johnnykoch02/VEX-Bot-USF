@@ -1,5 +1,6 @@
 #include "main.h"
-
+// Control Softwares
+TaskManager task_manager;
 // Motors
 pros::Motor driveFrontLeft(1, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor driveFrontRight(8, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
@@ -17,11 +18,14 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // pros::Mutex mutex;
 
 // Global Variables
-
+int const MAX_VOLTAGE = 12000;
+int const MATRIX_LOCATION = 1;
+int const ROBO_X = 0;
+int const ROBO_Y = 1;
 
 float roboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is undefined.
-  {0.0 0.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
+  {0.0, 0.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
 };
 
 double getAngle(){
@@ -33,8 +37,8 @@ double getAngle(){
 }
 
 void updatePos() {
-  pos[0][0] = getAngle();
-  /* Here is where you need to use Trig, and the PID that you havent wrote yet to 
+  roboMatrix[0][0] = getAngle();
+  /* Here is where you need to use Trig, and the PID that you havent wrote yet to
       calculate where you are in the world */
 
 }
@@ -64,9 +68,9 @@ float toAngle(float theta) {
 //   if (currentIndex < arg_num) {
 //      returnValue[currentIndex] = (int) curr;
 //   }
-  
+
 //   return returnValue;
-  
+
 //  }
 
 
@@ -104,5 +108,3 @@ float toAngle(float theta) {
 // translate(1000,100);
 
 // change_orientation(0); ENDBOX
-
-}

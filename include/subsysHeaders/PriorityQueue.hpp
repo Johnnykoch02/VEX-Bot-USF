@@ -1,3 +1,4 @@
+#pragma once
 #include "main.h"
 #include "./subsysHeaders/linkedlist.hpp"
 
@@ -15,12 +16,12 @@ private:
 public:
   PriorityQueue();
   bool isEmpty();
-  void deque_index(int index);
+  T* deque_index(int index);
   void enqueue(T* data, int priority);
   T* get(int index);
   T* deque();
   T* peek();
-  void dequeue_all();
+  void deque_all();
 };
 
 #endif

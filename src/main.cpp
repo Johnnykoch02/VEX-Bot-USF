@@ -27,7 +27,7 @@ void initialize() {
   driveBackLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   driveMiddleRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   imu.tare();
-
+  pros::delay(2000);
 }
 
 void autonomous(void) {
