@@ -1,5 +1,5 @@
-#include "main.h"
-
+#include "./subsysHeaders/mechanics.hpp"
+#include "./subsysHeaders/globals.hpp"
 // Helper Functions
 void setDrive(int leftPct, int leftDir,int rightPct, int rightDir) {
   int left = (int) ((leftPct/100) * leftDir * MAX_VOLTAGE);
@@ -8,21 +8,10 @@ void setDrive(int leftPct, int leftDir,int rightPct, int rightDir) {
   driveFrontRight.move_voltage(right);
   driveBackLeft.move_voltage(left);
   driveBackRight.move_voltage(right);
-  driveMiddleLeft.move_voltage(left);
-  driveMiddleRight.move_voltage(right);
+  // driveMiddleLeft.move_voltage(left);
+  // driveMiddleRight.move_voltage(right);
 }
 
-void resetDriveEncoders() {
-  // Resets encoders
-  driveFrontLeft.tare_position();
-  driveFrontRight.tare_position();
-}
-
-double avgDriveEncoderValue() {
-  return fabs(driveFrontLeft.get_position()) +
-            fabs(driveFrontRight.get_position())
-            /2;
-}
 
 // Driver Control Functions
 
@@ -32,35 +21,13 @@ void setDriveMotors() {
   int rightJoystick = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
   if (abs(leftJoystick) < 5) leftJoystick = 0;
   if (abs(rightJoystick)<5) rightJoystick = 0;
-  setDrive(leftJoystick, rightJoystick);
+  setDrive(abs(leftJoystick), abs(leftJoystick)/leftJoystick , rightJoystick, abs(rightJoystick)/rightJoystick);
 
 }
 
 // Autonomous
 
-bool translate(int units, int voltage) {
-  int units = un;
-  int voltage = vol;
-  // mutex.take(20000);
-  int direction = abs(units)/units;
-  // Reset motor encoders
-  resetDriveEncoders();
-  // Drive foward until units are reached
-  while(avgDriveEncoderValue() < abs(units)) {
-    setDrive(voltage*direction, voltage*direction);
-    pros::delay(10);
-  }
-  // Brake
-  setDrive(-10*direction, -10*direction);
-  pros::delay(50);
-  // Set drive back to neutral
-  return true;
-}
-
-
-
-bool change_orientation(double theta) {
-  // mutex.take(20000);
+void change_orientation(double theta, int power) {
   float dtheta = getAngle()-theta;
   int direction = 0;
   if (fabs(dtheta)< 180.0) {
@@ -70,31 +37,26 @@ bool change_orientation(double theta) {
     direction = -1 * (fabs(dtheta)/dtheta);
   }
 
-    while(fabs(getAngle()-theta) > 5.0) {
-      setDrive(-50*direction,50*direction);
+    while(fabs(getAngle()-theta) > 1.2) {
+      setDrive(power,-1*direction,power, direction);
       pros::delay(10);
     }//ccw
-    setDrive(10*direction,-10*direction);
-    pros::delay(50);
-  // mutex.give();
-  return true;
+     setDrive(power,-1*direction,power, direction);
+    pros::delay(10);
+
 }
 
-bool cal() {
-  driveFrontLeft = 35;
-  driveFrontRight = -35;
-  driveBackLeft = 35;
-  driveBackRight = -35;
-  driveMiddleLeft = 35;
-  driveMiddleRight = -35;
-  pros::delay(100);
-  driveFrontLeft = -35;
-  driveFrontRight = 35;
-  driveBackLeft = -35;
-  driveBackRight = 35;
-  driveMiddleLeft = -35;
-  driveMiddleRight = 35;
-pros::delay(1000);
-  return true;
+void updateRoboMatrix() {
+  for(int i = 0; i < 2; i++) { for(int j = 0; j < 2; j++) {
+      /*Update old Robo Matrix with the Current*/
+      oldRoboMatrix[i][j]= roboMatrix[i][j];
+    }
+  }
+
+  roboMatrix[0][0] = getAngle();
+  // int leftEncoderRead = (int) leftEncoder.get();
+  // int rightEncoderRead = (int) rightEncoder.get();
+  // leftEncoder.reset();
+  // rightEncoder.reset();
 
 }

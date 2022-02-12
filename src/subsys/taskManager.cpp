@@ -1,6 +1,11 @@
-#include "main.h"
+#include "./subsysHeaders/TaskManager.hpp"
+//PriorityQueue<RoboTask>::PriorityQueue()'
 
-TaskManager::TaskManager() {}
+
+TaskManager::TaskManager() {
+    this->tasks = PriorityQueue<RoboTask>();
+    this->current_task = nullptr;
+}
 
 void TaskManager::addTask(RoboTask *task, string parameters) {
     this->tasks.enqueue(task, 0);
@@ -18,11 +23,11 @@ void TaskManager::run() {
     }
     else if (tasks.isEmpty() == false)
     { /* Obtain the next task*/
-        this->current_task = tasks.deque();
+        this->current_task = this->tasks.deque();
     }
     else
     {/* Do Nothing?*/
-    pros::lcd::print(3, "All Tasks Completed.");
+    // pros::lcd::print(3, "All Tasks Completed.");
 
     }
 }

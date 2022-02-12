@@ -1,13 +1,18 @@
-#include "main.h"
 // Control Softwares
-TaskManager task_manager;
+#include "./subsysHeaders/globals.hpp"
+
+TaskManager task_manager = TaskManager();
 // Motors
-pros::Motor driveFrontLeft(1, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveFrontRight(8, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveBackLeft(2, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveBackRight(7, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveMiddleLeft(3, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveMiddleRight(6, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveFrontLeft(6, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveFrontRight(2, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveBackLeft(8, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveBackRight(1, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveMiddleLeft(0, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveMiddleRight(0, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_COUNTS);
+
+                            /*std::uint8_t iportTop, std::uint8_t iportBottom*/
+// pros::ADIEncoder leftEncoder(0,0, false);
+// pros::ADIEncoder rightEncoder(0,0, true);
 
 // Sensors
 pros:: Imu imu(12);
@@ -22,8 +27,13 @@ int const MAX_VOLTAGE = 12000;
 int const MATRIX_LOCATION = 1;
 int const ROBO_X = 0;
 int const ROBO_Y = 1;
+int const ENCODERTICKCOUNT = 360;
 
 float roboMatrix[2][2] = {
+  {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is undefined.
+  {0.0, 0.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
+};
+float oldRoboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is undefined.
   {0.0, 0.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
 };
@@ -34,13 +44,6 @@ double getAngle(){
   //   theta = theta-360.0;
   // }//endif
   return theta;
-}
-
-void updatePos() {
-  roboMatrix[0][0] = getAngle();
-  /* Here is where you need to use Trig, and the PID that you havent wrote yet to
-      calculate where you are in the world */
-
 }
 
 float toAngle(float theta) {

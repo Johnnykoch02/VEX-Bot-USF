@@ -31,8 +31,6 @@ void initialize() {
 }
 
 void autonomous(void) {
-  pros::lcd::print(0, "infunc");
-  go();
   while (true)
   {
     pros::lcd::set_text(0, "Angle: ");
@@ -46,8 +44,11 @@ void autonomous(void) {
 void opcontrol() {
 
   while(true) {
-    pros::lcd::set_text(0, "Angle: ");
-    pros::lcd::set_text(1, std::to_string(getAngle()));
+    double left = driveFrontLeft.get_position() + driveBackLeft.get_position();
+    double right = driveFrontRight.get_position() + driveBackRight.get_position();
+
+    pros::lcd::set_text(0, "left: " + std::to_string(left));
+    pros::lcd::set_text(1,"right: " + std::to_string(right));
     //Driver Controller
     setDriveMotors();
 

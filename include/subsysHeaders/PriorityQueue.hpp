@@ -1,11 +1,9 @@
-#pragma once
-#include "main.h"
-#include "./subsysHeaders/linkedlist.hpp"
-
 using namespace std;
 
 #ifndef PriorityQueue_h
 #define PriorityQueue_h
+
+#include "./subsysHeaders/linkedlist.hpp"
 
 template <class T>
 class PriorityQueue {

@@ -1,14 +1,13 @@
 #ifndef TASKMANAGER_H
 #define TASKMANAGER_H
 
-#include "main.h"
-#include "RoboTask.hpp"
-#include "PriorityQueue.hpp"
+#include "./subsysHeaders/RoboTask.hpp"
+#include "./subsysHeaders/PriorityQueue.hpp"
 
 
 class TaskManager {
 public:
-    RoboTask *current_task = nullptr;
+    RoboTask *current_task;
     PriorityQueue<RoboTask> tasks;
     TaskManager();
     void ClearAllTasks();

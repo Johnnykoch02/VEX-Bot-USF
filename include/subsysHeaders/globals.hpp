@@ -1,7 +1,7 @@
 #pragma once
 #include "main.h"
-#include "TaskManager.hpp"
-using namespace std;
+#include "./subsysHeaders/TaskManager.hpp"
+class TaskManager;
 // Control Softwares
 extern TaskManager task_manager;
 
@@ -12,6 +12,8 @@ extern pros::Motor driveBackLeft;
 extern pros::Motor driveBackRight;
 extern pros::Motor driveMiddleLeft;
 extern pros::Motor driveMiddleRight;
+extern pros::ADIEncoder leftEncoder;
+extern pros::ADIEncoder rightEncoder;
 
 
 
@@ -32,8 +34,9 @@ extern int const ROBO_Y;
 
 // #define ANGLER_POT_VERTICAL 3000
 extern float roboMatrix[2][2];
+extern float oldRoboMatrix[2][2];
+extern int const ENCODERTICKCOUNT;
 extern double getAngle();
 extern double toAngle();
-extern void go();
 
 // extern int[] params(string params, int arg_num);

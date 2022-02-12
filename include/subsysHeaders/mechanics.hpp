@@ -1,12 +1,16 @@
 #pragma once
-#include "main.h"
-
+// #include "main.h"
+#include "./subsysHeaders/globals.hpp"
+// double errorRot[2]; // [ current , old ]
+// double errorTran[2];// [ current , old ]
 //Driver
 void setDriveMotors();
 
 //Autonomous
-bool translate(int un, int vol); // Changing These
-bool change_orientation(double theta);
+// Obstacle Avoidance
+void translate(int x, int y); // Changing These
+void change_orientation(double theta);
+void updateRoboMatrix();
 bool cal();
 
 /* *Needs intake and Lift Update* */
@@ -15,3 +19,6 @@ bool cal();
 void setDrive();
 void resetDriveEncoders();
 double avgDriveEncoderValue();
+
+
+// Externs

@@ -73,16 +73,18 @@ void autonomous(void);
 #endif
 
 #ifdef __cplusplus
-#include "subsysHeaders/mechanics.hpp"
+
 #include "subsysHeaders/globals.hpp"
+#include "subsysHeaders/mechanics.hpp"
+// #include "subsysHeaders/Node.hpp"
+// #include "subsysHeaders/RoboTask.hpp"
+// #include "subsysHeaders/linkedlist.hpp"
+// #include "subsysHeaders/PriorityQueue.hpp"
+// #include "subsysHeaders/TaskManager.hpp"
 // #include "opcontrol.hpp"
 // #include "initialize.hpp"
 // #include "autonomous.hpp"
-#include "subsysHeaders/TaskManager.hpp"
-#include "subsysHeaders/RoboTask.hpp"
-#include "subsysHeaders/PriorityQueue.hpp"
-#include "subsysHeaders/Node.hpp"
-#include "subsysHeaders/linkedlist.hpp"
+
 
 /**
  * You can add C++-only headers here

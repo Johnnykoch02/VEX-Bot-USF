@@ -3,8 +3,7 @@ using namespace std;
 #ifndef RoboTask_h
 #define RoboTask_h
 
-#include "main.h"
-#include "globals.hpp"
+class TaskManager;
 
 class RoboTask {
 public:
