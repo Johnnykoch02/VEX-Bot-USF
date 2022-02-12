@@ -1,8 +1,7 @@
 #pragma once
 // #include "main.h"
 #include "./subsysHeaders/globals.hpp"
-// double errorRot[2]; // [ current , old ]
-// double errorTran[2];// [ current , old ]
+
 //Driver
 void setDriveMotors();
 

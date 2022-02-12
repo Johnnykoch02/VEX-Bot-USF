@@ -18,19 +18,46 @@ class Node {
 
 public:
 
-  Node();
-  ~Node();
-  Node(T *data, int priority, Node<T> *p, Node<T> *n);
-  Node(T *data, int priority);
-  Node* getNext();
-  Node* getPrev();
-  bool hasPrev();
-  bool hasNext();
-  void setPrev(Node<T> *p);
-  void setNext(Node<T> *n);
-  void setData(T* data);
-  T *getData();
-  int16_t getPriority();
+  Node(){}
+
+  ~Node() {}
+
+  Node(T *data, int priority, Node<T> *p, Node<T> *n) {
+    this->data = data;
+    this->prev = p;
+    this->next = n;
+    this->priority = priority;
+}
+
+  Node(T *data, int priority) {
+    this->data = data;
+    this->prev = nullptr;
+    this->next = nullptr;
+    this->priority = priority;
+}
+
+  Node* getNext() { return  this->next; }
+
+  Node* getPrev() { return  this->prev; }
+
+  bool hasPrev() { return !(this->prev == nullptr); }
+
+  bool hasNext(){ return  !(this->next == nullptr); }
+
+  void setPrev(Node<T> *p) {
+    this->prev = p;
+}
+  void setNext(Node<T> *n) {
+    this->next = n;
+}
+
+  void setData(T* data) {
+    this->data = data;
+}
+  T *getData() { return this->data; }
+  
+  int16_t getPriority() { return this->priority; }
+
   friend ostream &operator<<(ostream &stream, const Node<T> &node) {
       stream << "\tNode " << &node << ":" << endl;
       stream << "\t" << *node.data <<"\t Priority: " << node.priority;
