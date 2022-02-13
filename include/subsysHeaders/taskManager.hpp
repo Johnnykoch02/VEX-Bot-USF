@@ -11,7 +11,7 @@ public:
     PriorityQueue<RoboTask> tasks;
     TaskManager();
     void ClearAllTasks();
-    void addTask(RoboTask *task, string parameters);
+    void addTask(RoboTask *task);
     void run();
 
 

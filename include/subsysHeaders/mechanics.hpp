@@ -24,4 +24,6 @@ bool posInRange(float x, float y);
 
 int getLeftPower();
 int getRightPower();
+int getLeftPowerTheta(float theta, float dtheta, int direction);
+int getRightPowerTheta(float theta, float dtheta, int direction);
 // Externs

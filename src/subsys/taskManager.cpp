@@ -7,7 +7,7 @@ TaskManager::TaskManager() {
     this->current_task = nullptr;
 }
 
-void TaskManager::addTask(RoboTask *task, string parameters) {
+void TaskManager::addTask(RoboTask *task) {
     this->tasks.enqueue(task, 0);
 }
 void TaskManager::ClearAllTasks() {

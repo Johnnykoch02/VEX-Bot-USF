@@ -27,7 +27,7 @@ void setDriveMotors() {
 
 // Autonomous
 
-void change_orientation(double theta, int power) {
+void change_orientation(float theta) {
   float dtheta = getAngle()-theta;
   int direction = 0;
   if (fabs(dtheta)< 180.0) {
@@ -38,9 +38,7 @@ void change_orientation(double theta, int power) {
   }
 
     
-    setDrive(getLeftPower(),-1*direction,getRightPower(), direction); // CHANGE THIS TO WORK DIRECTLY WITH PID
-    pros::delay(10);
-
+    setDrive(getLeftPowerTheta(theta, dtheta, direction),-1*direction,getRightPowerTheta(theta, dtheta, direction), direction); // CHANGE THIS TO WORK DIRECTLY WITH PID
     pros::delay(10);
 
 }
@@ -87,11 +85,30 @@ float avgRightEncoders() {
 }
 
 int getLeftPower(float x, float y) {
+  float dx = x - roboMatrix[1][0];
+  float dy = y - roboMatrix[1][1];
+  float displacement = sqrt(dx*dx+dy*dy);
+
   return 100;
 }
 
 int getRightPower(float x, float y) {
   return 100;
+}
+
+int getLeftPowerTheta(float theta, float dtheta, int direction) {
+  if (direction > 0) 
+  {
+
+  }
+
+  else
+  {
+
+  }
+}
+int getRightPowerTheta(float theta, float dtheta, int direction) {
+
 }
 
 bool posInRange(float x, float y) {
