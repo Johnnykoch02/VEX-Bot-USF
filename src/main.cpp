@@ -27,7 +27,7 @@ void initialize() {
   driveBackLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   driveMiddleRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   imu.tare();
-  pros::delay(2000);
+  pros::delay(1000);
 }
 
 void autonomous(void) {
@@ -42,6 +42,7 @@ void autonomous(void) {
 
 
 void opcontrol() {
+  
 
   while(true) {
     double left = driveFrontLeft.get_position() + driveBackLeft.get_position();

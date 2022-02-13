@@ -37,11 +37,10 @@ void change_orientation(double theta, int power) {
     direction = -1 * (fabs(dtheta)/dtheta);
   }
 
-    while(fabs(getAngle()-theta) > 1.2) {
-      setDrive(power,-1*direction,power, direction);
-      pros::delay(10);
-    }//ccw
-     setDrive(power,-1*direction,power, direction);
+    
+    setDrive(getLeftPower(),-1*direction,getRightPower(), direction); // CHANGE THIS TO WORK DIRECTLY WITH PID
+    pros::delay(10);
+
     pros::delay(10);
 
 }
@@ -52,11 +51,53 @@ void updateRoboMatrix() {
       oldRoboMatrix[i][j]= roboMatrix[i][j];
     }
   }
+    /* Update Time Values */
+    timeMatrix[1] = timeMatrix[0];
+    timeMatrix[0] = pros::millis() / 1000; 
 
-  roboMatrix[0][0] = getAngle();
-  // int leftEncoderRead = (int) leftEncoder.get();
-  // int rightEncoderRead = (int) rightEncoder.get();
-  // leftEncoder.reset();
-  // rightEncoder.reset();
+    /* Update Robot Matrix */
+    roboMatrix[0][0] = getAngle(); // ANGLE
+    roboMatrix[0][1] = timeMatrix[0] - timeMatrix[1]; // DT
+    roboMatrix[MATRIX_LOCATION][ROBO_X] = roboMatrix[MATRIX_LOCATION][ROBO_X] + 0; //X POS // IDK the math
+    roboMatrix[MATRIX_LOCATION][ROBO_Y] = roboMatrix[MATRIX_LOCATION][ROBO_Y] + 0; // Y POS
 
+  /* Tare encoder Values */
+  tare_encoders();
+
+}
+
+void tare_encoders() {
+  /* Fix for the actual encoders*/
+  int a = driveFrontLeft.tare_position();
+  int b = driveFrontRight.tare_position();
+  int c = driveBackLeft.tare_position();
+  int d = driveBackRight.tare_position();
+}
+
+float avgLeftEncoders() {
+  float a = driveFrontLeft.get_position();
+  float b = driveBackLeft.get_position();
+  return (a+b)/2;
+}
+
+float avgRightEncoders() {
+  float a = driveBackRight.get_position();
+  float b = driveFrontRight.get_position();
+  return (a+b)/2;
+}
+
+int getLeftPower(float x, float y) {
+  return 100;
+}
+
+int getRightPower(float x, float y) {
+  return 100;
+}
+
+bool posInRange(float x, float y) {
+  return sqrt(
+      (roboMatrix[1][0] - x)* (roboMatrix[1][0] - x) + //DX^2
+      (roboMatrix[1][1] - y) * (roboMatrix[1][1] - y) //DY^2
+    )
+    < kd_pos; //POS DIFFERENTIAL
 }

@@ -7,7 +7,7 @@ void setDriveMotors();
 
 //Autonomous
 // Obstacle Avoidance
-void translate(int x, int y); // Changing These
+void move_to(float x, float y); // Changing These
 void change_orientation(double theta);
 void updateRoboMatrix();
 bool cal();
@@ -18,6 +18,10 @@ bool cal();
 void setDrive();
 void resetDriveEncoders();
 double avgDriveEncoderValue();
+void tare_encoders();
 
+bool posInRange(float x, float y);
 
+int getLeftPower();
+int getRightPower();
 // Externs

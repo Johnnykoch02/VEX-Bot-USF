@@ -20,6 +20,12 @@ void TaskManager::run() {
     if (this->current_task != nullptr)
     { /* Update and chek our current task*/
         this->current_task->update();
+        
+        if (this->current_task->finishedFlag)
+        { /* Task is complete */
+            delete this->current_task;
+            this->current_task = nullptr;
+        }
     }
     else if (tasks.isEmpty() == false)
     { /* Obtain the next task*/

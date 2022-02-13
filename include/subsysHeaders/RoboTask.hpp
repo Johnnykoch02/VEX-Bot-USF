@@ -10,13 +10,15 @@ public:
     float x, y;
     bool lift;
     bool intake;
+    float arm;
+    int totalOperations;
 
-    bool finishedFlag = false;
+    bool finishedFlag;
 
 
     RoboTask(RoboTask *task);
-    RoboTask(float x, float y, bool lift, bool intake);
-    void init();
+    ~RoboTask();
+    RoboTask(float x, float y, bool lift, bool intake, float arm);
     void update();
 
 };

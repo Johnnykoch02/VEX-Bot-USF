@@ -27,7 +27,22 @@ int const MAX_VOLTAGE = 12000;
 int const MATRIX_LOCATION = 1;
 int const ROBO_X = 0;
 int const ROBO_Y = 1;
-int const ENCODERTICKCOUNT = 360;
+int const ticksPERFOOT = 360;
+
+bool intakeState = false;
+bool liftState = false;
+float armPos = 0.0;
+
+//K-Values for PID
+float kp_pos = 3.0;
+float ki_pos = 1.5;
+float kd_pos = 0.25;
+float kp_angle = 2.5;
+float ki_angle = 5.0;
+float kd_angle = 0.75;
+float kp_arm;
+float ki_arm;
+float kd_arm;
 
 float roboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is delta T.
@@ -37,9 +52,12 @@ float oldRoboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is delta T.
   {0.0, 0.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
 };
+float timeMatrix[2] = {
+    0.0, 0.0
+};
 
-double getAngle(){
-  double theta = imu.get_heading();
+float getAngle(){
+  float theta = imu.get_heading();
   // if(theta>180) {
   //   theta = theta-360.0;
   // }//endif
@@ -50,64 +68,3 @@ float toAngle(float theta) {
   return (float)((int)theta%360);
 }
 
-
-// int[] params(string params, int arg_num) {
-//   int returnValue[arg_num];
-//   int currentIndex = 0;
-//   string curr = "";
-//   /* Loop over String, append to curr, then append to array based on comma delimiter */
-//   for (int i = 0; i < params.length(); i++) {
-//     /* Primary Seperator: checks first */
-//     if (char_traits::eq(params[i], ',')) {
-//       returnValue[currentIndex] = (int) curr;
-//       currentIndex++;
-//       curr = "";
-//     }
-//     else {
-//       curr+= params[i];
-//     }
-//   }
-//   /* Is there an item we havent added? */
-//   if (currentIndex < arg_num) {
-//      returnValue[currentIndex] = (int) curr;
-//   }
-
-//   return returnValue;
-
-//  }
-
-
-// //GO
-
-// void go() {
-// //   translate(1000,100); BOX
-
-//   int x[] = {100,100};
-//   pros::Task task{[=] {
-//           pros::lcd::set_text(4, "In Task One");
-//             translate(1000,100);
-//     }};
-//   pros::Task task_2{[=] {
-//             pros::lcd::set_text(4, "In Task Two");
-//             change_orientation(180);
-//             pros::lcd::set_text(4, "Done with task Two");
-//     }};
-
-  // pros::Task::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
-  // pros::Task::task_create(translate(int)(int),{1000,100}, pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
-  // pros::Task::::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
-  // pros::Task::task_create(translate(int)(int),{1000,100}, pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
-  // pros::Task::::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
-  // pros::Task::task_create(translate(int)(int),{1000,100}, pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
-  // pros::Task::::task_create(change_orientation(int),toAngle(getAngle()+180), pros::TASK_PRIO_DEFAULT,pros::TASK_STACK_DEPTH_DEFAULT, "Test Task");
-
-// change_orientation(90);
-// translate(1000,100);
-
-// change_orientation(180);
-// translate(1000,100);
-
-// change_orientation(270);
-// translate(1000,100);
-
-// change_orientation(0); ENDBOX
