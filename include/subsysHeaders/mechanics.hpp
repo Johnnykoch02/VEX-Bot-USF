@@ -19,11 +19,14 @@ void setDrive();
 void resetDriveEncoders();
 double avgDriveEncoderValue();
 void tare_encoders();
+float avgLeftEncoders();
+float avgRightEncoders();
+float* resultant_vector();
 
 bool posInRange(float x, float y);
 
-int getLeftPower();
-int getRightPower();
+int getLeftPower(float x, float y);
+int getRightPower(float x, float y);
 int getLeftPowerTheta(float theta, float dtheta, int direction);
 int getRightPowerTheta(float theta, float dtheta, int direction);
 // Externs

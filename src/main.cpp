@@ -7,13 +7,6 @@
 // // }
 //
 
-bool calibrate() {
-  imu.tare();
-  cal();
-  return true;
-
-}
-
 
 
 void initialize() {
@@ -27,6 +20,7 @@ void initialize() {
   driveBackLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   driveMiddleRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   imu.tare();
+  tare_encoders();
   pros::delay(1000);
 }
 
@@ -43,16 +37,16 @@ void autonomous(void) {
 
 void opcontrol() {
   
-
+  tare_encoders();
   while(true) {
-    double left = driveFrontLeft.get_position() + driveBackLeft.get_position();
-    double right = driveFrontRight.get_position() + driveBackRight.get_position();
-
-    pros::lcd::set_text(0, "left: " + std::to_string(left));
-    pros::lcd::set_text(1,"right: " + std::to_string(right));
+    updateRoboMatrix();
+    pros::lcd::set_text(0, "Matrix info| X:"+ std::to_string(roundf(roboMatrix[1][0])) + 
+    "| Y:" +std::to_string(roundf(roboMatrix[1][0])) +
+    "| Th:" + std::to_string(roundf(getAngle())) +
+    "| DT:"+ std::to_string(roboMatrix[0][1]));
     //Driver Controller
     setDriveMotors();
-
+    
     //Angler Control
 
     pros::delay(10);

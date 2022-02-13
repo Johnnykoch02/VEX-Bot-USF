@@ -30,6 +30,11 @@ extern int const MAX_VOLTAGE;
 extern int const MATRIX_LOCATION;
 extern int const ROBO_X;
 extern int const ROBO_Y;
+extern float const RADIUS;
+extern float const PI;
+
+extern float rLVector[2];
+extern float rRVector[2];
 
 // #define ANGLER_POT_VERTICAL 3000
 extern float roboMatrix[2][2];
@@ -42,9 +47,11 @@ extern float armPos;
 
 extern float const MAXARMPOS;
 
-extern int const ticksPERFOOT;
+extern int const ticksPERINCH;
 extern float getAngle();
 extern float toAngle();
+extern float DEG2RAD( const float deg );
+extern float RAD2DEG( const float rad );
 
 extern float kp_pos;
 extern float ki_pos;

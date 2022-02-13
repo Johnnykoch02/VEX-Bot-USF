@@ -3,12 +3,12 @@
 
 TaskManager task_manager = TaskManager();
 // Motors
-pros::Motor driveFrontLeft(6, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveFrontRight(2, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveBackLeft(8, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveBackRight(1, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveMiddleLeft(0, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveMiddleRight(0, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveFrontLeft(6, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveFrontRight(2, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveBackLeft(8, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveBackRight(1, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveMiddleLeft(0, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveMiddleRight(0, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
 
                             /*std::uint8_t iportTop, std::uint8_t iportBottom*/
 // pros::ADIEncoder leftEncoder(0,0, false);
@@ -27,7 +27,11 @@ int const MAX_VOLTAGE = 12000;
 int const MATRIX_LOCATION = 1;
 int const ROBO_X = 0;
 int const ROBO_Y = 1;
-int const ticksPERFOOT = 360;
+int const ticksPERINCH = 129;
+float const RADIUS = 7.5; //#INCHES
+/* These Vectors point in the direction of the Case wheel towards the center of the robot */
+float rRVector[2] = {0,0};
+float rLVector[2] = {0,0};
 
 bool intakeState = false;
 bool liftState = false;
@@ -56,12 +60,20 @@ float timeMatrix[2] = {
     0.0, 0.0
 };
 
+float const PI =  3.14159;
+
+float DEG2RAD( const float deg )
+{
+	return deg * PI/180;
+}
+float RAD2DEG( const float rad )
+{
+	return rad * 180/PI;
+}
+
 float getAngle(){
   float theta = imu.get_heading();
-  // if(theta>180) {
-  //   theta = theta-360.0;
-  // }//endif
-  return theta;
+  return fmod(((360 - theta) + 90), 360.0);
 }
 
 float toAngle(float theta) {

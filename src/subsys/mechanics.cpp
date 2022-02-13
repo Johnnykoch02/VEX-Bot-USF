@@ -55,13 +55,41 @@ void updateRoboMatrix() {
 
     /* Update Robot Matrix */
     roboMatrix[0][0] = getAngle(); // ANGLE
+
+    rRVector[0] = RADIUS * cos(DEG2RAD(roboMatrix[0][0]+90));
+    rRVector[1] = RADIUS * sin(DEG2RAD(roboMatrix[0][0]+90));
+    rLVector[0] = RADIUS * cos(DEG2RAD(roboMatrix[0][0]-90));
+    rLVector[1] = RADIUS * sin(DEG2RAD(roboMatrix[0][0]-90));
+    float *resultantVector = resultant_vector();
     roboMatrix[0][1] = timeMatrix[0] - timeMatrix[1]; // DT
-    roboMatrix[MATRIX_LOCATION][ROBO_X] = roboMatrix[MATRIX_LOCATION][ROBO_X] + 0; //X POS // IDK the math
-    roboMatrix[MATRIX_LOCATION][ROBO_Y] = roboMatrix[MATRIX_LOCATION][ROBO_Y] + 0; // Y POS
+    roboMatrix[MATRIX_LOCATION][ROBO_X] = roboMatrix[MATRIX_LOCATION][ROBO_X] + resultantVector[0]; //X POS // IDK the math
+    roboMatrix[MATRIX_LOCATION][ROBO_Y] = roboMatrix[MATRIX_LOCATION][ROBO_Y] + resultantVector[1]; // Y POS
 
-  /* Tare encoder Values */
+  delete[] resultantVector;
+  
+}
+
+float* resultant_vector() {
+  float *resultantVector = new float[2];
+  /* Displacement divided by our radius vectors magnitude */
+  float scaleLeftSide = (avgLeftEncoders() / ticksPERINCH) / RADIUS; 
+  float scaleRightSide = (avgRightEncoders() / ticksPERINCH) / RADIUS;
+  /* Tare encoder Values RIGHT after pilling their values */
   tare_encoders();
+  /* Gets the rotational vector from the rotation matrix */
+  float dthetaRight = DEG2RAD(roboMatrix[0][0] + 30);
+  float dthetaLeft = DEG2RAD(roboMatrix[0][0] -30);
+  float rightVec[2] = {scaleRightSide * (rRVector[0] * cos(dthetaRight) - rRVector[1] * sin(dthetaRight)) , 
+                        scaleRightSide * (rRVector[0] * sin(dthetaRight) + rRVector[1] * cos(dthetaRight))
+                      };
+  float leftVec[2] = {scaleLeftSide * (rLVector[0] * cos(dthetaLeft) - rLVector[1] * sin(dthetaLeft)) , 
+                        scaleLeftSide * (rLVector[0] * sin(dthetaLeft) + rLVector[1] * cos(dthetaLeft))
+                      };            
+  /* Populate the resultant vector  */
+  resultantVector[0] = (rightVec[0] + leftVec[0]) / 2;
+  resultantVector[1] = (rightVec[1] + leftVec[1]) / 2;
 
+  return resultantVector;
 }
 
 void tare_encoders() {
@@ -70,6 +98,10 @@ void tare_encoders() {
   int b = driveFrontRight.tare_position();
   int c = driveBackLeft.tare_position();
   int d = driveBackRight.tare_position();
+  if (a + b + c + d != 4)
+  {
+    pros::lcd::set_text(4, "Something went wrong.");
+  }
 }
 
 float avgLeftEncoders() {
@@ -93,7 +125,7 @@ int getLeftPower(float x, float y) {
 }
 
 int getRightPower(float x, float y) {
-  return 100;
+  return 100; 
 }
 
 int getLeftPowerTheta(float theta, float dtheta, int direction) {
@@ -106,9 +138,10 @@ int getLeftPowerTheta(float theta, float dtheta, int direction) {
   {
 
   }
+  return 100;
 }
 int getRightPowerTheta(float theta, float dtheta, int direction) {
-
+  return 100;
 }
 
 bool posInRange(float x, float y) {
