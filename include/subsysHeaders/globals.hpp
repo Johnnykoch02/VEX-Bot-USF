@@ -33,6 +33,7 @@ extern int const ROBO_Y;
 extern float const RADIUS;
 extern float const PI;
 
+extern float StraightVector[2];
 extern float rLVector[2];
 extern float rRVector[2];
 
@@ -50,8 +51,8 @@ extern float const MAXARMPOS;
 extern int const ticksPERINCH;
 extern float getAngle();
 extern float toAngle();
-extern float DEG2RAD( const float deg );
-extern float RAD2DEG( const float rad );
+extern float DEG2RAD(float deg );
+extern float RAD2DEG(float rad );
 
 extern float kp_pos;
 extern float ki_pos;
