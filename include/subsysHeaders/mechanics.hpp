@@ -15,7 +15,7 @@ bool cal();
 /* *Needs intake and Lift Update* */
 
 //Helpers
-void setDrive();
+void setDrive(float leftPct, int leftDir, float rightPct, int rightDir);
 void resetDriveEncoders();
 double avgDriveEncoderValue();
 void tare_encoders();

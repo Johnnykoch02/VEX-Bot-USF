@@ -1,9 +1,9 @@
 #include "./subsysHeaders/mechanics.hpp"
 #include "./subsysHeaders/globals.hpp"
 // Helper Functions
-void setDrive(int leftPct, int leftDir,int rightPct, int rightDir) {
-  int left = (int) ((leftPct/10) * leftDir * MAX_VOLTAGE);
-  int right = (int) ((rightPct/10) * rightDir * MAX_VOLTAGE);
+void setDrive(float leftPct, int leftDir, float rightPct, int rightDir) {
+  int left = (int) ((leftPct/100) * leftDir * MAX_VOLTAGE);
+  int right = (int) ((rightPct/100) * rightDir * MAX_VOLTAGE);
   driveFrontLeft.move_voltage(left);
   driveFrontRight.move_voltage(right);
   driveBackLeft.move_voltage(left);
@@ -21,7 +21,7 @@ void setDriveMotors() {
   int rightJoystick = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
   if (abs(leftJoystick) < 5) leftJoystick = 0;
   if (abs(rightJoystick)<5) rightJoystick = 0;
-  setDrive(abs(leftJoystick), abs(leftJoystick)/leftJoystick , abs(rightJoystick), abs(rightJoystick)/rightJoystick);
+  setDrive(abs(leftJoystick/127)*100, abs(leftJoystick)/leftJoystick , abs(rightJoystick/127)*100, abs(rightJoystick)/rightJoystick);
 
 }
 
