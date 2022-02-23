@@ -39,13 +39,16 @@ bool intakeState = false;
 bool liftState = false;
 float armPos = 0.0;
 
+float errorPower[2];
+float powerDelta[2];
+
 //K-Values for PID
-float kp_pos = 3.0;
-float ki_pos = 1.5;
-float kd_pos = 0.25;
-float kp_angle = 2.5;
-float ki_angle = 5.0;
-float kd_angle = 0.75;
+float kp_pos = 38.0;
+float ki_pos = 4.0;
+float kd_pos = 20.0;
+float kp_angle = 127.0;
+float ki_angle = 12.0;
+float kd_angle = 119.00;
 float kp_arm;
 float ki_arm;
 float kd_arm;
@@ -82,3 +85,12 @@ float toAngle(float theta) {
   return (float)((int)theta%360);
 }
 
+float get_dTheta(float tf, float ti) {
+    float positiveDTheta = fmod((tf+360)-ti, 360.0);
+    float negativeDTheta = -360 + positiveDTheta;
+    
+    if (fabs(positiveDTheta) <= fabs(negativeDTheta))
+    return positiveDTheta;
+    else return negativeDTheta;
+
+}

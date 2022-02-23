@@ -1,9 +1,9 @@
 #include "./subsysHeaders/mechanics.hpp"
 #include "./subsysHeaders/globals.hpp"
 // Helper Functions
-void setDrive(float leftPct, int leftDir, float rightPct, int rightDir) {
-  int left = (int) ((leftPct/100) * leftDir * MAX_VOLTAGE);
-  int right = (int) ((rightPct/100) * rightDir * MAX_VOLTAGE);
+void setDrive(float leftPct, float rightPct) {
+  int left = (int) ((leftPct/100) * MAX_VOLTAGE);
+  int right = (int) ((rightPct/100) * MAX_VOLTAGE);
   driveFrontLeft.move_voltage(left);
   driveFrontRight.move_voltage(right);
   driveBackLeft.move_voltage(left);
@@ -21,7 +21,7 @@ void setDriveMotors() {
   int rightJoystick = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
   if (abs(leftJoystick) < 5) leftJoystick = 0;
   if (abs(rightJoystick)<5) rightJoystick = 0;
-  setDrive(abs(leftJoystick/127)*100, abs(leftJoystick)/leftJoystick , abs(rightJoystick/127)*100, abs(rightJoystick)/rightJoystick);
+  setDrive(leftJoystick/127*100, rightJoystick/127*100);
 
 }
 
@@ -38,7 +38,7 @@ void change_orientation(float theta) {
   }
 
     
-    setDrive(getLeftPowerTheta(theta, dtheta, direction),-1*direction,getRightPowerTheta(theta, dtheta, direction), direction); // CHANGE THIS TO WORK DIRECTLY WITH PID
+    // setDrive(getLeftPowerTheta(theta, dtheta, direction),,getRightPowerTheta(theta, dtheta, direction), direction); // CHANGE THIS TO WORK DIRECTLY WITH PID
     pros::delay(10);
 
 }
@@ -128,18 +128,44 @@ float avgRightEncoders() {
   float b = driveFrontRight.get_position();
   return (a+b)/2;
 }
+void move_to(float x, float y) {
+  updatePower(x, y);
+  setDrive(powerDelta[0], powerDelta[1]); // CHANGE THIS TO WORK DIRECTLY WITH PID
+  pros::delay(10);
+}
 
-int getLeftPower(float x, float y) {
+
+void updatePower(float x, float y) {
   float dx = x - roboMatrix[1][0];
   float dy = y - roboMatrix[1][1];
   float displacement = sqrt(dx*dx+dy*dy);
 
-  return 100;
+  float velocityMagnitude = sqrt ( /*MAG of deltaP divided by the change in time*/
+    (roboMatrix[1][0] - oldRoboMatrix[1][0])*(roboMatrix[1][0] - oldRoboMatrix[1][0])
+  +  (roboMatrix[1][1] - oldRoboMatrix[1][1])*(roboMatrix[1][1] - oldRoboMatrix[1][1])
+  ) / (timeMatrix[0] - timeMatrix[1]);
+  float velocity[2] = {
+    velocityMagnitude * cos(DEG2RAD(roboMatrix[0][0])),
+   velocityMagnitude * sin(DEG2RAD(roboMatrix[0][0])) 
+  };
+
+  float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), roboMatrix[0][0]);
+
+  /*Left Side*/
+  if (fabs(dTheta) > 5.0) 
+  {/* The Difference in angle is greater than Threshold */
+  powerDelta[0] =  -kp_angle*dTheta - ki_angle*dTheta + kd_angle*dTheta;
+  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta - kd_angle*dTheta;
+  }
+  else
+  {
+    powerDelta[0] = kp_pos * (displacement) - ki_pos * dTheta - kd_pos* ( velocityMagnitude / displacement);
+    powerDelta[1] = kp_pos * (displacement) + ki_pos * dTheta - kd_pos* ( velocityMagnitude / displacement);
+  }
 }
 
-int getRightPower(float x, float y) {
-  return 100; 
-}
+
+
 
 int getLeftPowerTheta(float theta, float dtheta, int direction) {
   if (direction > 0) 

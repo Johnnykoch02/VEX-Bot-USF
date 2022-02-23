@@ -41,6 +41,8 @@ extern float rRVector[2];
 extern float roboMatrix[2][2];
 extern float oldRoboMatrix[2][2];
 extern float timeMatrix[2];
+extern float errorPower[2];
+extern float powerDelta[2];
 
 extern bool intakeState;
 extern bool liftState;
@@ -53,6 +55,8 @@ extern float getAngle();
 extern float toAngle();
 extern float DEG2RAD(float deg );
 extern float RAD2DEG(float rad );
+
+extern float get_dTheta(float tf, float ti);
 
 extern float kp_pos;
 extern float ki_pos;
