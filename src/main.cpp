@@ -26,15 +26,17 @@ void initialize() {
 
 void autonomous(void) {
   tare_encoders();
+  task_manager.addTask(new RoboTask(0, 100, false, liftState, intakeState, armPos));
   while (true)
   {
     updateRoboMatrix();
+    task_manager.run();
     pros::lcd::set_text(0, "Matrix info| X:"+ std::to_string(roboMatrix[1][0]) + 
     "| Y:" +std::to_string(roboMatrix[1][1]));
     pros::lcd::set_text(1,  "| Th:" + std::to_string(roboMatrix[0][0]) +
     "| DT:"+ std::to_string(roboMatrix[0][1]));
 
-    move_to(60, -60, false);
+    // move_to(60, -60, false);
   }
 
 }

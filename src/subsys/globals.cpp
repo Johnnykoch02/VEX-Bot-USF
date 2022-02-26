@@ -1,7 +1,7 @@
 // Control Softwares
 #include "./subsysHeaders/globals.hpp"
 
-// TaskManager task_manager = TaskManager();
+TaskManager task_manager = TaskManager();
 // Motors
 pros::Motor driveFrontLeft(6, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor driveFrontRight(2, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
