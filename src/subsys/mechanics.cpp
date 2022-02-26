@@ -128,33 +128,41 @@ float avgRightEncoders() {
   float b = driveFrontRight.get_position();
   return (a+b)/2;
 }
-void move_to(float x, float y) {
-  updatePower(x, y);
+void move_to(float x, float y, bool reversed) {
+  updatePower(x, y, reversed);
   setDrive(powerDelta[0], powerDelta[1]); // CHANGE THIS TO WORK DIRECTLY WITH PID
   pros::delay(10);
 }
 
 
-void updatePower(float x, float y) {
+void updatePower(float x, float y, bool reversed) {
   float dx = x - roboMatrix[1][0];
   float dy = y - roboMatrix[1][1];
-  float displacement = sqrt(dx*dx+dy*dy);
 
+  float angleModification = 0.0;
+  if (reversed)
+  {
+    angleModification = 180.0;
+  }
+
+  float displacement = sqrt(dx*dx+dy*dy);
+  /* Current PID Equations rely only on dTheta and Displacement, I would like to change this so it may be able to account for more variables such as these */
   float velocityMagnitude = sqrt ( /*MAG of deltaP divided by the change in time*/
     (roboMatrix[1][0] - oldRoboMatrix[1][0])*(roboMatrix[1][0] - oldRoboMatrix[1][0])
   +  (roboMatrix[1][1] - oldRoboMatrix[1][1])*(roboMatrix[1][1] - oldRoboMatrix[1][1])
   ) / (timeMatrix[0] - timeMatrix[1]);
+
   float velocity[2] = {
     velocityMagnitude * cos(DEG2RAD(roboMatrix[0][0])),
    velocityMagnitude * sin(DEG2RAD(roboMatrix[0][0])) 
   };
 
-  float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), roboMatrix[0][0]);
+  float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), fmod(roboMatrix[0][0] + angleModification, 360.0));
   float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
 
 
   if (fabs(fabs(dTheta) - 180.0) <= 4.0) 
-  {
+  { /* Robot has most likely overshot its target */
 powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0]);
     powerDelta[1] = -1 * (kp_pos * (displacement) + ki_pos*displacement +  16*dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1]);
   }
@@ -166,20 +174,20 @@ powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dThet
 
   }
   else
-  {
+  {/* Robot is moving Straight on a position */
     pros::lcd::set_text(3, "Straight Movement: " + std::to_string(displacement));
     powerDelta[0] = kp_pos * (displacement) + ki_pos*displacement*displacement  - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0];
     powerDelta[1] = kp_pos * (displacement) + ki_pos*displacement*displacement - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1];
 
     if (fabs(powerDelta[0]) > 80)
-    {
+    { /*Clamp Left Motor to 80% */
       powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
     }
     if (fabs(powerDelta[1]) > 80)
-    {
+    { /*Clamp Right Motor to 80% */
       powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
     }
-
+    /* Adjust Power by any error in the approach angle */
     powerDelta[0] -= 16 * dTheta;
     powerDelta[1] += 16 * dTheta;
   }

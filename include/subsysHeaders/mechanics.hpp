@@ -7,7 +7,7 @@ void setDriveMotors();
 
 //Autonomous
 // Obstacle Avoidance
-void move_to(float x, float y); // Changing These
+void move_to(float x, float y, bool reversed); // Changing These
 void change_orientation(double theta);
 void updateRoboMatrix();
 bool cal();
@@ -25,7 +25,7 @@ float* resultant_vector();
 
 bool posInRange(float x, float y);
 
-void updatePower(float x, float y);
+void updatePower(float x, float y, bool reversed);
 int getLeftPowerTheta(float theta, float dtheta, int direction);
 int getRightPowerTheta(float theta, float dtheta, int direction);
 // Externs

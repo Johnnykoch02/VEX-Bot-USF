@@ -34,7 +34,7 @@ void autonomous(void) {
     pros::lcd::set_text(1,  "| Th:" + std::to_string(roboMatrix[0][0]) +
     "| DT:"+ std::to_string(roboMatrix[0][1]));
 
-    move_to(60, -60);
+    move_to(60, -60, false);
   }
 
 }
