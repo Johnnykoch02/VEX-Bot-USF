@@ -150,18 +150,43 @@ void updatePower(float x, float y) {
   };
 
   float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), roboMatrix[0][0]);
+  float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
 
-  /*Left Side*/
-  if (fabs(dTheta) > 5.0) 
+
+  if (fabs(fabs(dTheta) - 180.0) <= 4.0) 
+  {
+powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0]);
+    powerDelta[1] = -1 * (kp_pos * (displacement) + ki_pos*displacement +  16*dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1]);
+  }
+  else if (fabs(dTheta) > 8.0) 
   {/* The Difference in angle is greater than Threshold */
-  powerDelta[0] =  -kp_angle*dTheta - ki_angle*dTheta + kd_angle*dTheta;
-  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta - kd_angle*dTheta;
+  powerDelta[0] =  -kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta) + kd_angle/dTheta;
+  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta) - kd_angle/dTheta;
+      pros::lcd::set_text(3, "Angle Correction: " + std::to_string(dTheta));
+
   }
   else
   {
-    powerDelta[0] = kp_pos * (displacement) - ki_pos * dTheta - kd_pos* ( velocityMagnitude / displacement);
-    powerDelta[1] = kp_pos * (displacement) + ki_pos * dTheta - kd_pos* ( velocityMagnitude / displacement);
+    pros::lcd::set_text(3, "Straight Movement: " + std::to_string(displacement));
+    powerDelta[0] = kp_pos * (displacement) + ki_pos*displacement*displacement  - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0];
+    powerDelta[1] = kp_pos * (displacement) + ki_pos*displacement*displacement - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1];
+
+    if (fabs(powerDelta[0]) > 80)
+    {
+      powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
+    }
+    if (fabs(powerDelta[1]) > 80)
+    {
+      powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
+    }
+
+    powerDelta[0] -= 16 * dTheta;
+    powerDelta[1] += 16 * dTheta;
   }
+
+
+
+
 }
 
 
