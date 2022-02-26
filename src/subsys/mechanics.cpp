@@ -27,22 +27,6 @@ void setDriveMotors() {
 
 // Autonomous
 
-void change_orientation(float theta) {
-  float dtheta = getAngle()-theta;
-  int direction = 0;
-  if (fabs(dtheta)< 180.0) {
-    direction = 1 * (fabs(dtheta)/dtheta);
-  }
-  else {
-    direction = -1 * (fabs(dtheta)/dtheta);
-  }
-
-    
-    // setDrive(getLeftPowerTheta(theta, dtheta, direction),,getRightPowerTheta(theta, dtheta, direction), direction); // CHANGE THIS TO WORK DIRECTLY WITH PID
-    pros::delay(10);
-
-}
-
 void updateRoboMatrix() {
   pros::delay(50);
   for(int i = 0; i < 2; i++) { for(int j = 0; j < 2; j++) {
@@ -198,30 +182,12 @@ powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dThet
 }
 
 
-
-
-int getLeftPowerTheta(float theta, float dtheta, int direction) {
-  if (direction > 0) 
-  {
-
-  }
-
-  else
-  {
-
-  }
-  return 100;
-}
-int getRightPowerTheta(float theta, float dtheta, int direction) {
-  return 100;
-}
-
 bool posInRange(float x, float y) {
   return sqrt(
       (roboMatrix[1][0] - x)* (roboMatrix[1][0] - x) + //DX^2
       (roboMatrix[1][1] - y) * (roboMatrix[1][1] - y) //DY^2
     )
-    < kd_pos; //POS DIFFERENTIAL
+    < 1.2; //INCHES
 }
 
 // float* resultant_vector() {

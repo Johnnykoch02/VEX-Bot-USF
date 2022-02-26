@@ -26,6 +26,4 @@ float* resultant_vector();
 bool posInRange(float x, float y);
 
 void updatePower(float x, float y, bool reversed);
-int getLeftPowerTheta(float theta, float dtheta, int direction);
-int getRightPowerTheta(float theta, float dtheta, int direction);
 // Externs
