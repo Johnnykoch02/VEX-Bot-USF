@@ -45,11 +45,11 @@ float powerDelta[2] = {0.1, 0.1};
 //K-Values for PID
 float kp_pos = 16.0;
 float ki_pos = 18.0;
-float kd_pos = 4.0;
+float kd_pos = 8.0;
 
-float kp_angle = 18.5;
-float ki_angle = 3.5;
-float kd_angle = 20.5;
+float kp_angle = 1.5;
+float ki_angle = 0.25;
+float kd_angle = 0.5;//20.5;
 float kp_arm;
 float ki_arm;
 float kd_arm;

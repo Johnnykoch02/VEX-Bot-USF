@@ -145,15 +145,23 @@ void updatePower(float x, float y, bool reversed) {
   float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
 
 
-  if (fabs(fabs(dTheta) - 180.0) <= 4.0) 
+  if (fabs(fabs(dTheta) - 180.0) <= 4.0 && displacement < 4.0) 
   { /* Robot has most likely overshot its target */
-powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0]);
+    powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0]);
     powerDelta[1] = -1 * (kp_pos * (displacement) + ki_pos*displacement +  16*dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1]);
   }
-  else if (fabs(dTheta) > 8.0) 
+  else if (fabs(dTheta) > 8.0 && displacement > 4.0) 
   {/* The Difference in angle is greater than Threshold */
-  powerDelta[0] =  -kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta) + kd_angle/dTheta;
-  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta) - kd_angle/dTheta;
+  powerDelta[0] =  -kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta) + kd_angle*dTheta;
+  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta) - kd_angle*dTheta;
+  if (fabs(powerDelta[0]) > 80)
+  { /*Clamp Left Motor to 80% */
+    powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
+  }
+  if (fabs(powerDelta[1]) > 80)
+  { /*Clamp Right Motor to 80% */
+    powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
+  }
       pros::lcd::set_text(3, "Angle Correction: " + std::to_string(dTheta));
 
   }
@@ -177,7 +185,7 @@ powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dThet
   }
 
 
-
+  pros::delay(20);
 
 }
 

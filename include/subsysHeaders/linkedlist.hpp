@@ -247,6 +247,7 @@ public:
 
   T* pop() {
     T* returnValue = new T(this->head->getData());
+
     this->remove(this->get(0));
     return returnValue;
     /*This could easily be wrong*/

@@ -12,6 +12,7 @@ public:
     bool lift;
     bool intake;
     float arm;
+    float timeDelayAfterFinished;
     int totalOperations;
 
     bool finishedFlag;
@@ -19,7 +20,10 @@ public:
 
     RoboTask(RoboTask *task);
     ~RoboTask();
-    RoboTask(float x, float y, bool reversed, bool lift, bool intake, float arm);
+    /* X: X Coordinate, Y: Y coordinate, Reversed: Reverses approach orientation, 
+    Lift: desired lift state, intake: desired intake state, arm: desired arm position, 
+    timeDelay: time to be delayed after task completion. */
+    RoboTask(float x, float y, bool reversed, bool lift, bool intake, float arm, float timeDelayAfterFinished);
     void update();
 
 };

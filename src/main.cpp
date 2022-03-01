@@ -26,7 +26,8 @@ void initialize() {
 
 void autonomous(void) {
   tare_encoders();
-  task_manager.addTask(new RoboTask(0, 100, false, liftState, intakeState, armPos));
+  task_manager.addTask(new RoboTask(0, 50, false, liftState, intakeState, armPos, 1000));
+  task_manager.addTask(new RoboTask(25, 25, false, liftState, intakeState, armPos, 50));
   while (true)
   {
     updateRoboMatrix();

@@ -21,7 +21,7 @@ void TaskManager::run() {
     { /* Update and chek our current task*/
         this->current_task->update();
         
-        if (this->current_task->finishedFlag)
+        if (this->current_task->finishedFlag == true)
         { /* Task is complete */
             delete this->current_task;
             this->current_task = nullptr;
