@@ -7,8 +7,8 @@ void setDriveMotors();
 
 //Autonomous
 // Obstacle Avoidance
-void move_to(float x, float y, bool reversed); // Changing These
-void change_orientation(double theta);
+void move_to(float x, float y, bool reversed,  bool *turnCompleted); // Changing These
+void change_orientation(float x, float y, bool reversed, bool *turnCompleted);
 void updateRoboMatrix();
 bool cal();
 

@@ -43,13 +43,13 @@ float errorPower[2];
 float powerDelta[2] = {0.1, 0.1};
 
 //K-Values for PID
-float kp_pos = 16.0;
-float ki_pos = 18.0;
-float kd_pos = 8.0;
+float kp_pos = (7/2);
+float ki_pos = (12/5);
+float kd_pos = 8;
 
-float kp_angle = 1.5;
-float ki_angle = 0.25;
-float kd_angle = 0.5;//20.5;
+float kp_angle = 12.0;
+float ki_angle = 8.0;
+float kd_angle = 80.0;//20.5;
 float kp_arm;
 float ki_arm;
 float kd_arm;
@@ -94,4 +94,10 @@ float get_dTheta(float tf, float ti) {
     return positiveDTheta;
     else return negativeDTheta;
 
+}
+
+
+float min(float a, float b) {
+  if (a<=b) return a;
+  else return b;
 }

@@ -14,6 +14,7 @@ public:
     float arm;
     float timeDelayAfterFinished;
     int totalOperations;
+    bool turnCompleted;
 
     bool finishedFlag;
 

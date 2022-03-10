@@ -102,7 +102,6 @@ void tare_encoders() {
 float avgLeftEncoders() {
   float a = driveFrontLeft.get_position();
   float b = driveBackLeft.get_position();
-      pros::lcd::set_text(4, std::to_string(a)  + " : " + std::to_string(b));
 
   return (a+b)/2;
 }
@@ -112,10 +111,59 @@ float avgRightEncoders() {
   float b = driveFrontRight.get_position();
   return (a+b)/2;
 }
-void move_to(float x, float y, bool reversed) {
-  updatePower(x, y, reversed);
+
+void move_to(float x, float y, bool reversed, bool *turnCompleted) {
+  if (!turnCompleted) change_orientation(x,y,reversed, turnCompleted);
+  else updatePower(x, y, reversed);
   setDrive(powerDelta[0], powerDelta[1]); // CHANGE THIS TO WORK DIRECTLY WITH PID
   pros::delay(10);
+}
+
+void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
+  float dx = x - roboMatrix[1][0];
+  float dy = y - roboMatrix[1][1];
+
+  float angleModification = 0.0;
+  if (reversed)
+  {
+    angleModification = 180.0;
+  }
+
+  float displacement = sqrt(dx*dx+dy*dy);
+  /* Current PID Equations rely only on dTheta and Displacement, I would like to change this so it may be able to account for more variables such as these */
+  float velocityMagnitude = sqrt ( /*MAG of deltaP divided by the change in time*/
+    (roboMatrix[1][0] - oldRoboMatrix[1][0])*(roboMatrix[1][0] - oldRoboMatrix[1][0])
+  +  (roboMatrix[1][1] - oldRoboMatrix[1][1])*(roboMatrix[1][1] - oldRoboMatrix[1][1])
+  ) / (timeMatrix[0] - timeMatrix[1]);
+
+  float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), fmod(roboMatrix[0][0] + angleModification, 360.0));
+  float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
+
+  /* The Difference in angle is greater than Threshold */
+  powerDelta[0] =  -kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta) + kd_angle/dTheta;
+  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta) - kd_angle/dTheta;
+  if (fabs(powerDelta[0]) > 80)
+  { /*Clamp Left Motor to 80% */
+    powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
+  }
+  if (fabs(powerDelta[1]) > 80)
+  { /*Clamp Right Motor to 80% */
+   powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
+  }
+  // if (fabs(powerDelta[0]) < 10)
+  // { /*Clamp Left Motor to 0% */
+  //  powerDelta[0] = 0;
+  // }
+  // if (fabs(powerDelta[1]) < 10)
+  // { /*Clamp Right Motor to 0% */
+  //  powerDelta[1] = 0;
+  // }
+  
+  if (powerDelta[0] == 0 && powerDelta[1] == 0) // Some check
+  {  
+      *turnCompleted = true;
+      pros::delay(10);
+  }
 }
 
 
@@ -150,42 +198,30 @@ void updatePower(float x, float y, bool reversed) {
     powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0]);
     powerDelta[1] = -1 * (kp_pos * (displacement) + ki_pos*displacement +  16*dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1]);
   }
-  else if (fabs(dTheta) > 8.0 && displacement > 4.0) 
-  {/* The Difference in angle is greater than Threshold */
-  powerDelta[0] =  -kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta) + kd_angle*dTheta;
-  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta) - kd_angle*dTheta;
-  if (fabs(powerDelta[0]) > 80)
-  { /*Clamp Left Motor to 80% */
-    powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
-  }
-  if (fabs(powerDelta[1]) > 80)
-  { /*Clamp Right Motor to 80% */
-    powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
-  }
-      pros::lcd::set_text(3, "Angle Correction: " + std::to_string(dTheta));
-
-  }
   else
   {/* Robot is moving Straight on a position */
     pros::lcd::set_text(3, "Straight Movement: " + std::to_string(displacement));
-    powerDelta[0] = kp_pos * (displacement) + ki_pos*displacement*displacement  - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0];
-    powerDelta[1] = kp_pos * (displacement) + ki_pos*displacement*displacement - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1];
+    powerDelta[0] = min(kp_pos * (displacement) + ki_pos*displacement*displacement  - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0], 100);
+    powerDelta[1] = min(kp_pos * (displacement) + ki_pos*displacement*displacement - kd_pos* ( 1 /displacement)* fabs(powerDelta[1])/powerDelta[1], 100);
 
-    if (fabs(powerDelta[0]) > 80)
-    { /*Clamp Left Motor to 80% */
-      powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
-    }
-    if (fabs(powerDelta[1]) > 80)
-    { /*Clamp Right Motor to 80% */
-      powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
-    }
     /* Adjust Power by any error in the approach angle */
-    powerDelta[0] -= 16 * dTheta;
-    powerDelta[1] += 16 * dTheta;
+    if(displacement > 5 && fabs(dTheta) > 3.0)
+    {
+      powerDelta[0] = 50;
+      powerDelta[1] = 50;
+      powerDelta[0] -= min((displacement*displacement/dTheta), 25);
+      powerDelta[1] += min((displacement*displacement/dTheta), 25);
+    }
+  // if (fabs(powerDelta[0]) < 10 .)
+  // { /*Clamp Left Motor to 0% */
+  //  powerDelta[0] = 0;
+  // }
+  // if (fabs(powerDelta[1]) < 10 )
+  // { /*Clamp Right Motor to 0% */
+  //  powerDelta[1] = 0;
   }
 
-
-  pros::delay(20);
+    pros::delay(20);
 
 }
 

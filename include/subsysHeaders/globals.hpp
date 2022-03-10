@@ -53,6 +53,7 @@ extern float const MAXARMPOS;
 extern int const ticksPERINCH;
 extern float getAngle();
 extern float toAngle();
+extern float min(float a, float b);
 extern float DEG2RAD(float deg );
 extern float RAD2DEG(float rad );
 

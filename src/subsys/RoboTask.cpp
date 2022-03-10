@@ -8,6 +8,7 @@ RoboTask::RoboTask(RoboTask *task) {
     this->finishedFlag = false;
     this->x = task->x;
     this->y = task->y;
+    this->turnCompleted = false;
     this->reversed = task->reversed;
     this->intake = task->intake;
     this->lift = task->lift;
@@ -22,6 +23,7 @@ RoboTask::RoboTask(float x, float y, bool reversed, bool lift, bool intake, floa
     this->finishedFlag = false;
     this->x = x;
     this->y = y;
+    this->turnCompleted = false;
     this->reversed = reversed;
     this->intake = intake;
     this->lift = lift;
@@ -34,11 +36,12 @@ RoboTask::RoboTask(float x, float y, bool reversed, bool lift, bool intake, floa
  void RoboTask::update() {
     /* This function is designed to work with PID to get to the target values,
         and update the finishedFlag according to reaching the target. */
+    pros::lcd::set_text(4, std::to_string(powerDelta[0])  + " : " + std::to_string(powerDelta[1]));
     pros::lcd::set_text(6, "Moving to X| "+ std::to_string(this->x) + " and Y| " + std::to_string(this->y));
     int operationsCompleted = 0;
     if(this->x >= 0 && this->y >= 0)
      { /* Task Being Implemented is Changing Current POS */
-        move_to(this->x, this->y, this->reversed);
+        move_to(this->x, this->y, this->reversed, &this->turnCompleted);
         if (posInRange(this->x, this->y))
         {
             operationsCompleted++;
