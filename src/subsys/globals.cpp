@@ -47,9 +47,9 @@ float kp_pos = (7/2);
 float ki_pos = (12/5);
 float kd_pos = 8;
 
-float kp_angle = 12.0;
-float ki_angle = 8.0;
-float kd_angle = 80.0;//20.5;
+float kp_angle = 14.0;
+float ki_angle = 1.5;
+float kd_angle = 0.8 ;//20.5;
 float kp_arm;
 float ki_arm;
 float kd_arm;

@@ -140,8 +140,8 @@ void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
   float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
 
   /* The Difference in angle is greater than Threshold */
-  powerDelta[0] =  -kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta) + kd_angle/dTheta;
-  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta) - kd_angle/dTheta;
+  powerDelta[0] =  -kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta) + kd_angle*dTheta*dTheta*dTheta;
+  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta) - kd_angle*dTheta*dTheta*dTheta;
   if (fabs(powerDelta[0]) > 80)
   { /*Clamp Left Motor to 80% */
     powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
