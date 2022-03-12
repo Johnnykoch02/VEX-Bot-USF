@@ -20,7 +20,9 @@ extern pros::ADIEncoder rightEncoder;
 
 //Sensors
 extern pros::Imu imu;
-
+extern pros::ADIDigitalOut pneumaticsLeft;
+extern pros::ADIDigitalOut pneumaticsRight;
+extern pros::Motor armMotor;
 
 //Controllers
 extern pros::Controller controller;
@@ -32,10 +34,11 @@ extern int const ROBO_X;
 extern int const ROBO_Y;
 extern float const RADIUS;
 extern float const PI;
-
+extern bool tryingToStop;
 extern float StraightVector[2];
 extern float rLVector[2];
 extern float rRVector[2];
+extern float armError[2];
 
 // #define ANGLER_POT_VERTICAL 3000
 extern float roboMatrix[2][2];
@@ -47,7 +50,8 @@ extern float powerDelta[2];
 extern bool intakeState;
 extern bool liftState;
 extern float armPos;
-
+extern int minArmPos;
+extern int maxArmPos;
 extern float const MAXARMPOS;
 
 extern int const ticksPERINCH;

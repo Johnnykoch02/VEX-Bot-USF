@@ -3,7 +3,7 @@
 #include "./subsysHeaders/globals.hpp"
 
 //Driver
-void setDriveMotors();
+void setController();
 
 //Autonomous
 // Obstacle Avoidance
@@ -16,6 +16,8 @@ bool cal();
 
 //Helpers
 void setDrive(float leftPct, float rightPct);
+void setPneumatics();
+void setArmPos(float targetPose);
 void resetDriveEncoders();
 double avgDriveEncoderValue();
 void tare_encoders();
@@ -25,5 +27,5 @@ float* resultant_vector();
 
 bool posInRange(float x, float y);
 
-void updatePower(float x, float y, bool reversed);
+void updatePower(float x, float y, bool reversed,  bool *turnCompleted);
 // Externs

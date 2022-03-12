@@ -12,12 +12,19 @@ pros::Motor driveBackRight(1, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENC
 pros::Motor driveMiddleLeft(0, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor driveMiddleRight(0, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
 
+pros::ADIDigitalOut pneumaticsLeft('G');
+pros::ADIDigitalOut pneumaticsRight('H');
+
+pros::Motor armMotor(5, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_DEGREES);
+
+
                             /*std::uint8_t iportTop, std::uint8_t iportBottom*/
 // pros::ADIEncoder leftEncoder(0,0, false);
 // pros::ADIEncoder rightEncoder(0,0, true);
 
 // Sensors
 pros:: Imu imu(12);
+
 // Controllers
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
@@ -25,7 +32,7 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // pros::Mutex mutex;
 
 // Global Variables
-int const MAX_VOLTAGE = 120000;
+int const MAX_VOLTAGE = 8500;
 int const MATRIX_LOCATION = 1;
 int const ROBO_X = 0;
 int const ROBO_Y = 1;
@@ -38,21 +45,24 @@ float rRVector[2] = {0,0};
 bool intakeState = false;
 bool liftState = false;
 float armPos = 0.0;
+int minArmPos = 0;
+int maxArmPos = 1300;
+bool tryingToStop = false;
 
 float errorPower[2];
+float armError[2];
 float powerDelta[2] = {0.1, 0.1};
 
 //K-Values for PID
-float kp_pos = (7/2);
-float ki_pos = (12/5);
+float kp_pos = (11/2);
+float ki_pos = (33/5);
 float kd_pos = 8;
-
-float kp_angle = 14.0;
-float ki_angle = 1.5;
-float kd_angle = 0.8 ;//20.5;
-float kp_arm;
+float kp_angle = 10.0;
+float ki_angle = 2.8;
+float kd_angle = 20;//20.5;
+float kp_arm = 100;
 float ki_arm;
-float kd_arm;
+float kd_arm = 27;
 
 float roboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is delta T.
@@ -79,7 +89,7 @@ float RAD2DEG( const float rad )
 
 float getAngle(){
   float theta = imu.get_heading();
-  return fmod(((360 - theta) + 90), 360.0);
+  return round(fmod(((360 - theta) + 90), 360.0));
 }
 
 float toAngle(float theta) {
@@ -89,7 +99,7 @@ float toAngle(float theta) {
 float get_dTheta(float tf, float ti) {
     float positiveDTheta = fmod((tf+360)-ti, 360.0);
     float negativeDTheta = -360 + positiveDTheta;
-    
+
     if (fabs(positiveDTheta) <= fabs(negativeDTheta))
     return positiveDTheta;
     else return negativeDTheta;

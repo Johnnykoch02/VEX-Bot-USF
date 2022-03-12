@@ -12,10 +12,29 @@ void setDrive(float leftPct, float rightPct) {
   // driveMiddleRight.move_voltage(right);
 }
 
+void setPneumatics() {
+    pneumaticsLeft.set_value(liftState);
+    pneumaticsRight.set_value(liftState);
+}
+
+void setArmPos(float targetPose) {
+  if (targetPose > maxArmPos) targetPose = maxArmPos;
+  else if (targetPose < minArmPos) targetPose = minArmPos;
+  if (targetPose >= minArmPos && targetPose <= maxArmPos) 
+  {
+    armError[0] = (targetPose - armPos);
+    float voltage = (kp_arm*armError[0]) + (kd_arm*(armError[0] - armError[1]));
+    armMotor.move_voltage(voltage);
+    armError[1] = armError[0];
+  }
+    // && fabs(targetPose - maxArmPos) > 4 && fabs(targetPose - minArmPos) > 4)
+
+     
+}
 
 // Driver Control Functions
 
-void setDriveMotors() {
+void setController() {
 
   int leftJoystick = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
   int rightJoystick = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
@@ -23,6 +42,16 @@ void setDriveMotors() {
   if (abs(rightJoystick)<5) rightJoystick = 0;
   setDrive(leftJoystick/127*100, rightJoystick/127*100);
 
+  bool pneumatics = controller.get_digital(pros::E_CONTROLLER_DIGITAL_X);
+  if (pneumatics == true)
+  {
+    liftState = !(liftState);
+  }
+  setPneumatics();
+
+  int armAxis = controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
+  setArmPos(80*armAxis + armPos);
+  pros::delay(50);
 }
 
 // Autonomous
@@ -36,10 +65,12 @@ void updateRoboMatrix() {
   }
     /* Update Time Values */
     timeMatrix[1] = timeMatrix[0];
-    timeMatrix[0] = pros::millis(); 
+    timeMatrix[0] = pros::millis();
 
     /* Update Robot Matrix */
     roboMatrix[0][0] = getAngle(); // ANGLE
+
+    armPos+= armMotor.get_position();
 
     StraightVector[0] =  cos(DEG2RAD(roboMatrix[0][0]));
     StraightVector[1] =  sin(DEG2RAD(roboMatrix[0][0]));
@@ -47,12 +78,13 @@ void updateRoboMatrix() {
     // rLVector[1] = RADIUS * sin(DEG2RAD(roboMatrix[0][0]-90));
     float *resultantVector = resultant_vector();
     roboMatrix[0][1] = timeMatrix[0] - timeMatrix[1]; // DT
-    if (fabs(resultantVector[0]) > 0 || fabs(resultantVector[1]) > 0) 
+    if (fabs(resultantVector[0]) > 0 || fabs(resultantVector[1]) > 0)
     {
       roboMatrix[1][0] +=resultantVector[0]; //X POS
       roboMatrix[1][1] += resultantVector[1]; // Y POS
     }
     pros::lcd::set_text(3, std::to_string(roboMatrix[1][0]) + " " + std::to_string(roboMatrix[1][1]));
+
 
   delete[] resultantVector;
 
@@ -68,9 +100,9 @@ float* resultant_vector() {
   float deltaTime = (timeMatrix[0] - timeMatrix[1]) / 1000;
   float magVLeft = (deltaPositionLeft/deltaTime);
   float magVRight = (deltaPositionRight/deltaTime);
-  float vLeft[2] = {magVLeft * cos(DEG2RAD(roboMatrix[0][0])), 
+  float vLeft[2] = {magVLeft * cos(DEG2RAD(roboMatrix[0][0])),
                         magVLeft * sin(DEG2RAD(roboMatrix[0][0]))};
-  float vRight[2] = {magVRight * cos(DEG2RAD(roboMatrix[0][0])), 
+  float vRight[2] = {magVRight * cos(DEG2RAD(roboMatrix[0][0])),
                         magVRight * sin(DEG2RAD(roboMatrix[0][0]))};
 
   float dMid = RADIUS;
@@ -78,7 +110,7 @@ float* resultant_vector() {
   float R = fabs( dMid *
             (magVLeft + magVRight) / (magVLeft - magVRight)
   );
-  
+
   float velocityVector[2] = {
     (vLeft[0]+vRight[0]) / 2,  (vLeft[1]+vRight[1]) / 2
   };
@@ -93,6 +125,7 @@ void tare_encoders() {
   int b = driveFrontRight.tare_position();
   int c = driveBackLeft.tare_position();
   int d = driveBackRight.tare_position();
+  armMotor.tare_position();
   if (a + b + c + d != 4)
   {
     pros::lcd::set_text(4, "Something went wrong.");
@@ -113,8 +146,8 @@ float avgRightEncoders() {
 }
 
 void move_to(float x, float y, bool reversed, bool *turnCompleted) {
-  if (!turnCompleted) change_orientation(x,y,reversed, turnCompleted);
-  else updatePower(x, y, reversed);
+  if (!*turnCompleted) change_orientation(x,y,reversed, turnCompleted);
+  else updatePower(x, y, reversed, turnCompleted);
   setDrive(powerDelta[0], powerDelta[1]); // CHANGE THIS TO WORK DIRECTLY WITH PID
   pros::delay(10);
 }
@@ -138,15 +171,16 @@ void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
 
   float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), fmod(roboMatrix[0][0] + angleModification, 360.0));
   float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
-
   /* The Difference in angle is greater than Threshold */
-  powerDelta[0] =  -kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta) + kd_angle*dTheta*dTheta*dTheta;
-  powerDelta[1] =  kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta) - kd_angle*dTheta*dTheta*dTheta;
-  if (fabs(powerDelta[0]) > 80)
+
+  powerDelta[0] =  -45*fabs(dTheta)/dTheta;//-kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta); //+ kd_angle*sin(dTheta);
+  powerDelta[1] =  45*fabs(dTheta)/dTheta;//kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta);//- kd_angle*sin(dTheta);
+
+  if (fabs(powerDelta[0]) > 100)
   { /*Clamp Left Motor to 80% */
     powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
   }
-  if (fabs(powerDelta[1]) > 80)
+  if (fabs(powerDelta[1]) > 100)
   { /*Clamp Right Motor to 80% */
    powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
   }
@@ -158,16 +192,30 @@ void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
   // { /*Clamp Right Motor to 0% */
   //  powerDelta[1] = 0;
   // }
-  
-  if (powerDelta[0] == 0 && powerDelta[1] == 0) // Some check
-  {  
-      *turnCompleted = true;
-      pros::delay(10);
+  // if (tryingToStop == true) {
+  //   {
+
+  //   }
+  // }
+
+  if (fabs(dTheta) < 2.5) // Some check
+  {
+    powerDelta[0] *=-1;
+    powerDelta[1] *= -1;
+    setDrive(powerDelta[0], powerDelta[1]);
+    pros::delay(20);
+    setDrive(0,0);
+    powerDelta[0] = 0;
+    powerDelta[1] = 0;
+    *turnCompleted = true;
+    pros::delay(50);
   }
+  else if( !turnCompleted) tryingToStop = false;
+
 }
 
 
-void updatePower(float x, float y, bool reversed) {
+void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
   float dx = x - roboMatrix[1][0];
   float dy = y - roboMatrix[1][1];
 
@@ -186,14 +234,14 @@ void updatePower(float x, float y, bool reversed) {
 
   float velocity[2] = {
     velocityMagnitude * cos(DEG2RAD(roboMatrix[0][0])),
-   velocityMagnitude * sin(DEG2RAD(roboMatrix[0][0])) 
+   velocityMagnitude * sin(DEG2RAD(roboMatrix[0][0]))
   };
 
   float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), fmod(roboMatrix[0][0] + angleModification, 360.0));
   float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
 
 
-  if (fabs(fabs(dTheta) - 180.0) <= 4.0 && displacement < 4.0) 
+  if (fabs(fabs(dTheta) - 180.0) <= 4.0 && displacement < 4.0)
   { /* Robot has most likely overshot its target */
     powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0]);
     powerDelta[1] = -1 * (kp_pos * (displacement) + ki_pos*displacement +  16*dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1]);
@@ -207,10 +255,10 @@ void updatePower(float x, float y, bool reversed) {
     /* Adjust Power by any error in the approach angle */
     if(displacement > 5 && fabs(dTheta) > 3.0)
     {
-      powerDelta[0] = 50;
-      powerDelta[1] = 50;
-      powerDelta[0] -= min((displacement*displacement/dTheta), 25);
-      powerDelta[1] += min((displacement*displacement/dTheta), 25);
+      powerDelta[0] = 80;
+      powerDelta[1] = 80;
+      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25);
+      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25);
     }
   // if (fabs(powerDelta[0]) < 10 .)
   // { /*Clamp Left Motor to 0% */
@@ -220,8 +268,7 @@ void updatePower(float x, float y, bool reversed) {
   // { /*Clamp Right Motor to 0% */
   //  powerDelta[1] = 0;
   }
-
-    pros::delay(20);
+  if(dTheta > 10 && displacement > 5) *turnCompleted = false;
 
 }
 
@@ -245,12 +292,12 @@ bool posInRange(float x, float y) {
 //   /* Gets the rotational vector from the rotation matrix */
 //   // float dthetaRight = DEG2RAD(roboMatrix[0][0] + 30);
 //   // float dthetaLeft = DEG2RAD(roboMatrix[0][0] -30);
-//   // float rightVec[2] = {scaleRightSide * (rRVector[0] * cos(dthetaRight) - rRVector[1] * sin(dthetaRight)) , 
+//   // float rightVec[2] = {scaleRightSide * (rRVector[0] * cos(dthetaRight) - rRVector[1] * sin(dthetaRight)) ,
 //   //                       scaleRightSide * (rRVector[0] * sin(dthetaRight) + rRVector[1] * cos(dthetaRight))
 //   //                     };
-//   // float leftVec[2] = {scaleLeftSide * (rLVector[0] * cos(dthetaLeft) - rLVector[1] * sin(dthetaLeft)) , 
+//   // float leftVec[2] = {scaleLeftSide * (rLVector[0] * cos(dthetaLeft) - rLVector[1] * sin(dthetaLeft)) ,
 //   //                       scaleLeftSide * (rLVector[0] * sin(dthetaLeft) + rLVector[1] * cos(dthetaLeft))
-//   //                     };            
+//   //                     };
 //   // /* Populate the resultant vector  */
 //   // resultantVector[0] = (rightVec[0] + leftVec[0]) / 2;
 //   // resultantVector[1] = (rightVec[1] + leftVec[1]) / 2;
@@ -259,21 +306,21 @@ bool posInRange(float x, float y) {
 //   {/* Robot is moving in one direction Homogeneous */
 //     float magnitude = std::min(fabs(scaleLeftSide),fabs(scaleRightSide));
 //     int direction = fabs(scaleLeftSide + scaleRightSide)/(scaleLeftSide+scaleRightSide);
-    
+
 //     float extraDistance = fabs(scaleLeftSide-scaleRightSide);
-//     float extraDistanceVec[2] = {extraDistance * (StraightVector[0] * cos(dtheta) - StraightVector[1] * sin(dtheta)) , 
+//     float extraDistanceVec[2] = {extraDistance * (StraightVector[0] * cos(dtheta) - StraightVector[1] * sin(dtheta)) ,
 //                         extraDistance * (StraightVector[0] * sin(dtheta) + StraightVector[1] * cos(dtheta))
 //                       };
 
 //     resultantVector[0] = direction * magnitude * StraightVector[0]; + extraDistanceVec[0];
 //     resultantVector[1] = direction * magnitude * StraightVector[1]; + extraDistanceVec[1];
-    
+
 //   }
-//   else 
-//   { /* Opposite directions*/ 
+//   else
+//   { /* Opposite directions*/
 //     int direction = fabs(scaleLeftSide + scaleRightSide)/(scaleLeftSide+scaleRightSide);
 //     float extraDistance = fabs(scaleLeftSide-scaleRightSide);
-//     float extraDistanceVec[2] = {extraDistance * (StraightVector[0] * cos(dtheta) - StraightVector[1] * sin(dtheta)) , 
+//     float extraDistanceVec[2] = {extraDistance * (StraightVector[0] * cos(dtheta) - StraightVector[1] * sin(dtheta)) ,
 //                         extraDistance * (StraightVector[0] * sin(dtheta) + StraightVector[1] * cos(dtheta))
 //                       };
 

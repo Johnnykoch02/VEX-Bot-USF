@@ -29,7 +29,6 @@ RoboTask::RoboTask(float x, float y, bool reversed, bool lift, bool intake, floa
     this->lift = lift;
     this->arm = arm;
     this->timeDelayAfterFinished = timeDelayAfterFinished;
-
     this->totalOperations = 4;
 }
 
@@ -44,6 +43,7 @@ RoboTask::RoboTask(float x, float y, bool reversed, bool lift, bool intake, floa
         move_to(this->x, this->y, this->reversed, &this->turnCompleted);
         if (posInRange(this->x, this->y))
         {
+            setDrive(0,0);
             operationsCompleted++;
         }
     }
@@ -51,8 +51,17 @@ RoboTask::RoboTask(float x, float y, bool reversed, bool lift, bool intake, floa
     //if() arm pos
     if(this->intake == intakeState) operationsCompleted++;
     if(this->lift == liftState) operationsCompleted++;
-    if(this->arm == armPos) operationsCompleted++;
+    else {
+        liftState = !liftState;
+        setPneumatics();
+    }
+    if(this->arm != armPos) {
+      setArmPos(this->arm);
+      if (fabs(this->arm - armPos) < 16) operationsCompleted++;
+  }
     pros::lcd::set_text(7,std::to_string(operationsCompleted)+" of " + std::to_string(this->totalOperations));
+
+
     if (operationsCompleted == this->totalOperations) {
         /* Delay time for task to finish */
         setDrive(-powerDelta[0],-powerDelta[1]);

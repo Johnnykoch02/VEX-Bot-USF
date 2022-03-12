@@ -26,8 +26,24 @@ void initialize() {
 
 void autonomous(void) {
   tare_encoders();
-  task_manager.addTask(new RoboTask(0, 50, false, liftState, intakeState, armPos, 1000));
-  task_manager.addTask(new RoboTask(25, 25, false, liftState, intakeState, armPos, 50));
+  updateRoboMatrix();
+
+  // task_manager.addTask(new RoboTask(0, 50, false, liftState, intakeState, armPos, 3000));
+  task_manager.addTask(new RoboTask(0,0, false, liftState, intakeState, 1000 , 1000));
+  task_manager.addTask(new RoboTask(0,0, false, liftState, intakeState,  250 , 1000));
+  task_manager.addTask(new RoboTask(0,0, false, liftState, intakeState,  1000, 1000));
+  task_manager.addTask(new RoboTask(0,0, false, liftState, intakeState, 250, 1000));
+  task_manager.addTask(new RoboTask(0,0, false, liftState, intakeState, 1000 , 1000));
+  task_manager.addTask(new RoboTask(0,0, false, liftState, intakeState, 250 , 1000));
+  task_manager.addTask(new RoboTask(0,0, false, liftState, intakeState, 1000 , 5000));
+  task_manager.addTask(new RoboTask(0,0, false, liftState, intakeState, 0, 1000));
+ 
+  // task_manager.addTask(new RoboTask(50, 0, false, !liftState, intakeState, armPos, 3000));
+  // task_manager.addTask(new RoboTask(0, 0, false, liftState, intakeState, armPos, 3000));
+  // task_manager.addTask(new RoboTask(0, 1, false, liftState, intakeState, armPos, 3000));
+
+  bool t = false;
+  
   while (true)
   {
     updateRoboMatrix();
@@ -36,7 +52,6 @@ void autonomous(void) {
     "| Y:" +std::to_string(roboMatrix[1][1]));
     pros::lcd::set_text(1,  "| Th:" + std::to_string(roboMatrix[0][0]) +
     "| DT:"+ std::to_string(roboMatrix[0][1]));
-
     // move_to(60, -60, false);
   }
 
@@ -53,8 +68,11 @@ void opcontrol() {
     "| Y:" +std::to_string(roboMatrix[1][1]));
     pros::lcd::set_text(1,  "| Th:" + std::to_string(roboMatrix[0][0]) +
     "| DT:"+ std::to_string(roboMatrix[0][1]));
+
+
+    pros::lcd::set_text(5, "Arm Position:" + std::to_string(armPos));
     //Driver Controller
-    setDriveMotors();
+    setController();
     
     //Angler Control
 
