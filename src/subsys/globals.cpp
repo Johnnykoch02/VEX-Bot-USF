@@ -46,7 +46,7 @@ bool intakeState = false;
 bool liftState = false;
 float armPos = 0.0;
 int minArmPos = 0;
-int maxArmPos = 1300;
+int maxArmPos = 1100;
 bool tryingToStop = false;
 
 float errorPower[2];
@@ -54,19 +54,19 @@ float armError[2];
 float powerDelta[2] = {0.1, 0.1};
 
 //K-Values for PID
-float kp_pos = (11/2);
+float kp_pos = (15/2);
 float ki_pos = (33/5);
-float kd_pos = 8;
+float kd_pos = 7;
 float kp_angle = 10.0;
 float ki_angle = 2.8;
 float kd_angle = 20;//20.5;
-float kp_arm = 100;
+float kp_arm = 102;
 float ki_arm;
-float kd_arm = 27;
+float kd_arm = 25;
 
 float roboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is delta T.
-  {0.0, 0.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
+  {6.0, 6.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
 };
 float oldRoboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is delta T.

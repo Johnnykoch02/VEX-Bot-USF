@@ -219,6 +219,12 @@ void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
   float dx = x - roboMatrix[1][0];
   float dy = y - roboMatrix[1][1];
 
+  int powerMod = 0;
+  if (reversed) {
+    powerMod = -1;
+  }
+  else powerMod = 1;
+  
   float angleModification = 0.0;
   if (reversed)
   {
@@ -257,8 +263,8 @@ void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
     {
       powerDelta[0] = 80;
       powerDelta[1] = 80;
-      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25);
-      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25);
+      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25) * powerMod;
+      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25) * powerMod;
     }
   // if (fabs(powerDelta[0]) < 10 .)
   // { /*Clamp Left Motor to 0% */
@@ -267,6 +273,10 @@ void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
   // if (fabs(powerDelta[1]) < 10 )
   // { /*Clamp Right Motor to 0% */
   //  powerDelta[1] = 0;
+  }
+  if(reversed) {
+    powerDelta[0] *=-1;
+    powerDelta[1]*=-1;
   }
   if(dTheta > 10 && displacement > 5) *turnCompleted = false;
 

@@ -58,15 +58,15 @@ RoboTask::RoboTask(float x, float y, bool reversed, bool lift, bool intake, floa
     if(this->arm != armPos) {
       setArmPos(this->arm);
       if (fabs(this->arm - armPos) < 16) operationsCompleted++;
-  }
+  } else operationsCompleted++;
     pros::lcd::set_text(7,std::to_string(operationsCompleted)+" of " + std::to_string(this->totalOperations));
 
 
     if (operationsCompleted == this->totalOperations) {
         /* Delay time for task to finish */
-        setDrive(-powerDelta[0],-powerDelta[1]);
-        pros::delay(20);
-        setDrive(0,0);
+        // setDrive(-powerDelta[0],-powerDelta[1]);
+        // pros::delay(50);
+        // setDrive(0,0);
         pros::delay(timeDelayAfterFinished);
         finishedFlag = true;
     }
