@@ -3,27 +3,24 @@
 
 TaskManager task_manager = TaskManager();
 // Motors
-pros::Motor driveFrontLeft(6, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveFrontRight(2, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveBackLeft(8, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveBackRight(1, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveFrontLeft(1, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveFrontRight(8, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveBackLeft(3, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveBackRight(10, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveMiddleLeft(2, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor driveMiddleRight(9, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
 
 
-pros::Motor driveMiddleLeft(0, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor driveMiddleRight(0, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor armFront(20, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
 
-pros::ADIDigitalOut pneumaticsLeft('G');
-pros::ADIDigitalOut pneumaticsRight('H');
-
-pros::Motor armMotor(5, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_DEGREES);
-
+pros::Motor armBack(6, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
 
                             /*std::uint8_t iportTop, std::uint8_t iportBottom*/
 // pros::ADIEncoder leftEncoder(0,0, false);
 // pros::ADIEncoder rightEncoder(0,0, true);
 
 // Sensors
-pros:: Imu imu(12);
+pros:: Imu imu(5);
 
 // Controllers
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
@@ -32,11 +29,11 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // pros::Mutex mutex;
 
 // Global Variables
-int const MAX_VOLTAGE = 8500;
+int const MAX_VOLTAGE = 12000;
 int const MATRIX_LOCATION = 1;
 int const ROBO_X = 0;
 int const ROBO_Y = 1;
-int const ticksPERINCH = 120;
+int const ticksPERINCH = 40;
 float const RADIUS = 7.5; //#INCHES
 /* These Vectors point in the direction of the Case wheel towards the center of the robot */
 float StraightVector[2] = {0,0};
@@ -44,33 +41,35 @@ float rLVector[2] = {0,0};
 float rRVector[2] = {0,0};
 bool intakeState = false;
 bool liftState = false;
-float armPos = 0.0;
+float armPosFront = 0.0;
+float armPosBack = 0.0;
 int minArmPos = 0;
-int maxArmPos = 1100;
+int maxArmPos = 5500;
 bool tryingToStop = false;
 
 float errorPower[2];
-float armError[2];
+float armErrorFront[2];
+float armErrorBack[2];
 float powerDelta[2] = {0.1, 0.1};
 
 //K-Values for PID
-float kp_pos = (15/2);
-float ki_pos = (33/5);
-float kd_pos = 7;
-float kp_angle = 10.0;
-float ki_angle = 2.8;
-float kd_angle = 20;//20.5;
-float kp_arm = 102;
+float kp_pos = (13/2);
+float ki_pos = (31/5);
+float kd_pos = 12;
+float kp_angle = 1.2;
+float ki_angle = 0.4;
+float kd_angle = 1.0;//20.5;
+float kp_arm = 82;
 float ki_arm;
-float kd_arm = 25;
+float kd_arm = 20;
 
 float roboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is delta T.
-  {6.0, 6.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
+  {130.0, 4.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
 };
 float oldRoboMatrix[2][2] = {
   {0.0, 0.0}, // Theta (qngle we are facing compared to the unit circle), second value is delta T.
-  {0.0, 0.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
+  {130.0, 4.0} // Pos x Coordinate on plane, Pos y Coordinate on plane
 };
 float timeMatrix[2] = {
     0.0, 0.0
@@ -89,7 +88,8 @@ float RAD2DEG( const float rad )
 
 float getAngle(){
   float theta = imu.get_heading();
-  return round(fmod(((360 - theta) + 90), 360.0));
+  // return round(fmod(((360 - theta) + 90), 360.0));
+  return fmod(((360 - theta) + 90), 360.0);
 }
 
 float toAngle(float theta) {

@@ -8,30 +8,43 @@ void setDrive(float leftPct, float rightPct) {
   driveFrontRight.move_voltage(right);
   driveBackLeft.move_voltage(left);
   driveBackRight.move_voltage(right);
-  // driveMiddleLeft.move_voltage(left);
-  // driveMiddleRight.move_voltage(right);
+  driveMiddleLeft.move_voltage(left);
+  driveMiddleRight.move_voltage(right);
 }
 
-void setPneumatics() {
-    pneumaticsLeft.set_value(liftState);
-    pneumaticsRight.set_value(liftState);
-}
+// void setPneumatics() {
+//     pneumaticsLeft.set_value(liftState);
+//     pneumaticsRight.set_value(liftState);
+// }
 
-void setArmPos(float targetPose) {
+void setArmPosBack(float targetPose) {
   if (targetPose > maxArmPos) targetPose = maxArmPos;
   else if (targetPose < minArmPos) targetPose = minArmPos;
   if (targetPose >= minArmPos && targetPose <= maxArmPos) 
   {
-    armError[0] = (targetPose - armPos);
-    float voltage = (kp_arm*armError[0]) + (kd_arm*(armError[0] - armError[1]));
-    armMotor.move_voltage(voltage);
-    armError[1] = armError[0];
+    armErrorBack[0] = (targetPose - armPosBack);
+    float voltage = (kp_arm*armErrorBack[0]) + (kd_arm*(armErrorBack[0] - armErrorBack[1]));
+    armBack.move_voltage(voltage);
+    armErrorBack[1] = armErrorBack[0];
   }
     // && fabs(targetPose - maxArmPos) > 4 && fabs(targetPose - minArmPos) > 4)
 
      
 }
+void setArmPosFront(float targetPose) {
+  if (targetPose > maxArmPos) targetPose = maxArmPos;
+  else if (targetPose < minArmPos) targetPose = minArmPos;
+  if (targetPose >= minArmPos && targetPose <= maxArmPos)//(targetPose >= minArmPos && targetPose <= maxArmPos) 
+  {
+    armErrorFront[0] = (targetPose - armPosFront);
+    float voltage = (kp_arm*armErrorFront[0]);// + (kd_arm*(armErrorFront[0] - armErrorFront[1]));
+    armFront.move_voltage(voltage);
+    armErrorFront[1] = armErrorFront[0];
+  }
+    // && fabs(targetPose - maxArmPos) > 4 && fabs(targetPose - minArmPos) > 4)
 
+     
+}
 // Driver Control Functions
 
 void setController() {
@@ -42,15 +55,17 @@ void setController() {
   if (abs(rightJoystick)<5) rightJoystick = 0;
   setDrive(leftJoystick/127*100, rightJoystick/127*100);
 
-  bool pneumatics = controller.get_digital(pros::E_CONTROLLER_DIGITAL_X);
-  if (pneumatics == true)
-  {
-    liftState = !(liftState);
-  }
-  setPneumatics();
+  // bool pneumatics = controller.get_digital(pros::E_CONTROLLER_DIGITAL_X);
+  // if (pneumatics == true)
+  // {
+  //   liftState = !(liftState);
+  // }
+  // setPneumatics();
 
-  int armAxis = controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
-  setArmPos(80*armAxis + armPos);
+  int armAxisFront = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+  setArmPosFront(80*armAxisFront + armPosFront);
+  int armAxisBack = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+  setArmPosBack(80*armAxisBack + armPosBack);
   pros::delay(50);
 }
 
@@ -70,7 +85,8 @@ void updateRoboMatrix() {
     /* Update Robot Matrix */
     roboMatrix[0][0] = getAngle(); // ANGLE
 
-    armPos+= armMotor.get_position();
+    armPosFront+= armFront.get_position();
+    armPosBack+= armBack.get_position();
 
     StraightVector[0] =  cos(DEG2RAD(roboMatrix[0][0]));
     StraightVector[1] =  sin(DEG2RAD(roboMatrix[0][0]));
@@ -125,7 +141,8 @@ void tare_encoders() {
   int b = driveFrontRight.tare_position();
   int c = driveBackLeft.tare_position();
   int d = driveBackRight.tare_position();
-  armMotor.tare_position();
+  armFront.tare_position();
+  armBack.tare_position();
   if (a + b + c + d != 4)
   {
     pros::lcd::set_text(4, "Something went wrong.");
@@ -148,8 +165,8 @@ float avgRightEncoders() {
 void move_to(float x, float y, bool reversed, bool *turnCompleted) {
   if (!*turnCompleted) change_orientation(x,y,reversed, turnCompleted);
   else updatePower(x, y, reversed, turnCompleted);
-  setDrive(powerDelta[0], powerDelta[1]); // CHANGE THIS TO WORK DIRECTLY WITH PID
-  pros::delay(10);
+  setDrive(powerDelta[0], powerDelta[1]);
+  pros::delay(20);
 }
 
 void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
@@ -172,45 +189,27 @@ void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
   float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), fmod(roboMatrix[0][0] + angleModification, 360.0));
   float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
   /* The Difference in angle is greater than Threshold */
+  errorPower[0] = dTheta;
+  powerDelta[0] = -kp_angle * errorPower[0] - ki_angle * errorPower[0] - kd_angle * (errorPower[0] - errorPower[1]);
+  powerDelta[1] =  kp_angle * errorPower[0] + ki_angle * errorPower[0] + kd_angle * (errorPower[0] - errorPower[1]);
 
-  powerDelta[0] =  -45*fabs(dTheta)/dTheta;//-kp_angle*dTheta -ki_angle*dTheta*fabs(dTheta); //+ kd_angle*sin(dTheta);
-  powerDelta[1] =  45*fabs(dTheta)/dTheta;//kp_angle*dTheta + ki_angle*dTheta*fabs(dTheta);//- kd_angle*sin(dTheta);
-
-  if (fabs(powerDelta[0]) > 100)
-  { /*Clamp Left Motor to 80% */
-    powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
-  }
-  if (fabs(powerDelta[1]) > 100)
-  { /*Clamp Right Motor to 80% */
-   powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
-  }
+  // if (fabs(powerDelta[0]) > 100)
+  // { /*Clamp Left Motor to 80% */
+  //   powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
+  // }
+  // if (fabs(powerDelta[1]) > 100)
+  // { /*Clamp Right Motor to 80% */
+  //  powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
+  // }
   // if (fabs(powerDelta[0]) < 10)
   // { /*Clamp Left Motor to 0% */
   //  powerDelta[0] = 0;
-  // }
-  // if (fabs(powerDelta[1]) < 10)
-  // { /*Clamp Right Motor to 0% */
-  //  powerDelta[1] = 0;
-  // }
-  // if (tryingToStop == true) {
-  //   {
 
-  //   }
-  // }
-
-  if (fabs(dTheta) < 2.5) // Some check
-  {
-    powerDelta[0] *=-1;
-    powerDelta[1] *= -1;
-    setDrive(powerDelta[0], powerDelta[1]);
-    pros::delay(20);
-    setDrive(0,0);
-    powerDelta[0] = 0;
-    powerDelta[1] = 0;
+  pros::lcd::set_text(3, std::to_string(powerDelta[0]) + " :P: " + std::to_string(powerDelta[1]));
+  if (fabs(errorPower[0] - errorPower[1]) < 0.25) {
     *turnCompleted = true;
-    pros::delay(50);
   }
-  else if( !turnCompleted) tryingToStop = false;
+  errorPower[1] = errorPower[0];
 
 }
 
@@ -288,7 +287,7 @@ bool posInRange(float x, float y) {
       (roboMatrix[1][0] - x)* (roboMatrix[1][0] - x) + //DX^2
       (roboMatrix[1][1] - y) * (roboMatrix[1][1] - y) //DY^2
     )
-    < 1.2; //INCHES
+    < 0.8; //INCHES
 }
 
 // float* resultant_vector() {

@@ -16,8 +16,8 @@ bool cal();
 
 //Helpers
 void setDrive(float leftPct, float rightPct);
-void setPneumatics();
-void setArmPos(float targetPose);
+void setArmPosFront(float targetPose);
+void setArmPosBack(float targetPose);
 void resetDriveEncoders();
 double avgDriveEncoderValue();
 void tare_encoders();
