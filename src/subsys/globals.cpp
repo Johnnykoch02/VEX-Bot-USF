@@ -2,6 +2,7 @@
 #include "./subsysHeaders/globals.hpp"
 
 TaskManager task_manager = TaskManager();
+GameObjectHandler ObjHandler = GameObjectHandler();
 // Motors
 pros::Motor driveFrontLeft(1, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor driveFrontRight(8, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);

@@ -1,10 +1,12 @@
 #pragma once
 #include "main.h"
 #include "./subsysHeaders/TaskManager.hpp"
+#include "./subsysHeaders/GameObjectHandler.hpp"
 class TaskManager;
 // Control Softwares
 extern TaskManager task_manager;
-
+extern GameObjectHandler ObjHandler;
+// extern 
 //MOTORS
 extern pros::Motor driveFrontLeft;
 extern pros::Motor driveFrontRight;

@@ -46,15 +46,10 @@ RoboTask::RoboTask(float x, float y, bool reversed,  float armFront, float armBa
         }
     }
     else operationsCompleted++;
-    //if() arm pos
-//     if(this->armBack != armPosBack) {
-//       setArmPosBack(this->armBack);
-//       if (fabs(this->armBack - armPosBack) < 220) operationsCompleted++;
-//   } else operationsCompleted++;
-        operationsCompleted++;
 
-      if(this->armFront != armPosFront) {
-      setArmPosFront(this->armFront);
+    operationsCompleted++;
+    if(this->armFront != armPosFront) {
+        setArmPosFront(this->armFront);
       if (fabs(this->armFront - armPosFront) < 220) operationsCompleted++;
   } else operationsCompleted++;
     pros::lcd::set_text(7,std::to_string(operationsCompleted)+" of " + std::to_string(this->totalOperations));
