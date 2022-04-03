@@ -7,7 +7,8 @@ class TaskManager;
 
 class RoboTask {
 public:
-    float x, y;
+    float *x;
+    float *y;
     bool reversed;
     float armFront;
     float armBack;
@@ -23,7 +24,7 @@ public:
     /* X: X Coordinate, Y: Y coordinate, Reversed: Reverses approach orientation, 
     Lift: desired lift state, intake: desired intake state, arm: desired arm position, 
     timeDelay: time to be delayed after task completion. */
-    RoboTask(float x, float y, bool reversed, float armFront, float armBack, float timeDelayAfterFinished);
+    RoboTask(float *x, float* y, bool reversed, float armFront, float armBack, float timeDelayAfterFinished);
     void update();
 
 };

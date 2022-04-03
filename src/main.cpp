@@ -29,25 +29,17 @@ void initialize() {
 void autonomous(void) {
   tare_encoders();
   updateRoboMatrix();
+                //#of pairs, [x,y]
+  float task_vals[3][2] = {
+                        {130, 390.0},
+                          {130,4},
+                          {130,4}
+                          };
 
-  
-  //   task_manager.addTask(new RoboTask(-1,-1, false, maxArmPos,  0, 500));
-  // task_manager.addTask(new RoboTask(127.0, 24, false, 0,  0, 100));
-    // task_manager.addTask(new RoboTask(-1,-1, true, 2*maxArmPos/3,  0, 1000));
-  task_manager.addTask(new RoboTask(127-4.53,24+8.84, true, 0,  0, 100));
-    // task_manager.addTask(new RoboTask(-1, -1, true, 2*maxArmPos/4,  maxArmPos/3, 100));
-  // task_manager.addTask(new RoboTask(127-15.8,24+31.4, true, 2*maxArmPos/3,  maxArmPos, 500));
-  // task_manager.addTask(new RoboTask(-1,-1, true, maxArmPos/5,  maxArmPos/4, 500));
-  // task_manager.addTask(new RoboTask(123,106, true, maxArmPos/5,  maxArmPos/4, 100)); 
-  // task_manager.addTask(new RoboTask(120,126.5, false, 0, 0, 100)); 
-  // task_manager.addTask(new RoboTask(65.5,128.5, false, maxArmPos/5,  maxArmPos/4, 100)); 
-    // task_manager.addTask(new RoboTask(125,119, true, maxArmPos/4,  maxArmPos/3, 100)); 
-
-
-  // task_manager.addTask(new RoboTask(-1, -1, false, minArmPos, minArmPos, 1000));
-
-  bool t = false;
-  
+  // SCHEDULING 
+  task_manager.addTask(new RoboTask(&task_vals[0][0], &task_vals[0][1], false, armPosFront, armPosBack, 100 ));
+  task_manager.addTask(new RoboTask(&task_vals[1][0], &task_vals[1][1], false, armPosFront, armPosBack, 100 ));
+  task_manager.addTask(new RoboTask(&task_vals[2][0], &task_vals[2][1], false, armPosFront,armPosBack, 100));
   while (true)
   {
     updateRoboMatrix();
@@ -56,6 +48,7 @@ void autonomous(void) {
     "| Y:" +std::to_string(roboMatrix[1][1]));
     pros::lcd::set_text(1,  "| Th:" + std::to_string(roboMatrix[0][0]) +
     "| DT:"+ std::to_string(roboMatrix[0][1]));
+    pros::lcd::set_text(2, "Arm pos:" + to_string(armPosFront));
   }
 
 }

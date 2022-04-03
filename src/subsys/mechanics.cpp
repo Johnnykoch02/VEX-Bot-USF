@@ -1,5 +1,6 @@
 #include "./subsysHeaders/mechanics.hpp"
 #include "./subsysHeaders/globals.hpp"
+#include "./API.h"
 // Helper Functions
 void setDrive(float leftPct, float rightPct) {
   int left = (int) ((leftPct/100) * MAX_VOLTAGE);
@@ -99,6 +100,11 @@ void updateRoboMatrix() {
       roboMatrix[1][0] +=resultantVector[0]; //X POS
       roboMatrix[1][1] += resultantVector[1]; // Y POS
     }
+
+    if (limitFront.get_value() == 1) {
+      interruptHandlerFront();
+    }
+
     pros::lcd::set_text(3, std::to_string(roboMatrix[1][0]) + " " + std::to_string(roboMatrix[1][1]));
 
 
@@ -193,17 +199,6 @@ void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
   powerDelta[0] = -kp_angle * errorPower[0] - ki_angle * errorPower[0] - kd_angle * (errorPower[0] - errorPower[1]);
   powerDelta[1] =  kp_angle * errorPower[0] + ki_angle * errorPower[0] + kd_angle * (errorPower[0] - errorPower[1]);
 
-  // if (fabs(powerDelta[0]) > 100)
-  // { /*Clamp Left Motor to 80% */
-  //   powerDelta[0] = 80 * fabs(powerDelta[0])/powerDelta[0];
-  // }
-  // if (fabs(powerDelta[1]) > 100)
-  // { /*Clamp Right Motor to 80% */
-  //  powerDelta[1] = 80 * fabs(powerDelta[1])/powerDelta[1];
-  // }
-  // if (fabs(powerDelta[0]) < 10)
-  // { /*Clamp Left Motor to 0% */
-  //  powerDelta[0] = 0;
 
   pros::lcd::set_text(3, std::to_string(powerDelta[0]) + " :P: " + std::to_string(powerDelta[1]));
   if (fabs(errorPower[0] - errorPower[1]) < 0.25) {
@@ -262,8 +257,8 @@ void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
     {
       powerDelta[0] = 80;
       powerDelta[1] = 80;
-      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25) * powerMod;
-      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25) * powerMod;
+      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 15) * powerMod;
+      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 15) * powerMod;
     }
   // if (fabs(powerDelta[0]) < 10 .)
   // { /*Clamp Left Motor to 0% */
@@ -289,6 +284,11 @@ bool posInRange(float x, float y) {
     )
     < 0.8; //INCHES
 }
+
+void interruptHandlerFront() {
+      armPosFront = maxArmPos;
+}
+
 
 // float* resultant_vector() {
 //   float *resultantVector = new float[2];

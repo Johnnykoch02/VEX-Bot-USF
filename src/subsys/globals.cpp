@@ -19,6 +19,7 @@ pros::Motor armBack(6, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_CO
                             /*std::uint8_t iportTop, std::uint8_t iportBottom*/
 // pros::ADIEncoder leftEncoder(0,0, false);
 // pros::ADIEncoder rightEncoder(0,0, true);
+pros::ADIDigitalIn limitFront('A');
 
 // Sensors
 pros:: Imu imu(5);

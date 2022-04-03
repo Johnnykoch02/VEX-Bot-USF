@@ -1,8 +1,6 @@
 #include "subsysHeaders/GameObjectHandler.hpp"
 
-GameObjectHandler::GameObjectHandler(){
-
-}
+GameObjectHandler::GameObjectHandler() {}
 
 void GameObjectHandler::addObject(std::string identifier, int type, float x, float y) {
     GameObject* obj = query(identifier);
@@ -21,12 +19,7 @@ void GameObjectHandler::addObject(std::string identifier, int type, float x, flo
         {/*We need to update the closest object to it*/
         obj = nullptr;
         float distance = 10000;
-        for (auto it = Objects.begin(); it!= Objects.end(); ++it) {
-            if (it->type == type) {
-                float distBtwObjs = pow(x- *it->x, 2) + pow(y- *it->y, 2);
-                if (distBtwObjs < distance) obj = query(it->identifier);
-            }
-        }
+        obj = getClosestObj(type, x, y);
             obj->setX(x);
             obj->setY(y);
         }
@@ -60,7 +53,19 @@ GameObject* GameObjectHandler::query(std::string identifier) {
                 auto& val = *it;
                 obj = &val;
         }
-        return obj;
     }
+    return obj;
 }
+
+GameObject* GameObjectHandler::getClosestObj(int type, float x, float y) { 
+    float distance = 10000;
+    for (auto it = this->Objects.begin(); it!= Objects.end(); ++it) {
+        if (it->type == type) {
+            float distBtwObjs = pow(x- *it->x, 2) + pow(y- *it->y, 2);
+            if (distBtwObjs < distance) return query(it->identifier);
+            }
+        }
+    return nullptr;
+}
+
 //float x, float y, std::string identifier, int type) {

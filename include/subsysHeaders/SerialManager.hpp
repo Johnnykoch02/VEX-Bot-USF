@@ -1,5 +1,6 @@
 #ifndef SERIALMANAGER_H
 #define SERIALMANAGER_H
+
 #include <string>
 class SerialManager {
     public:

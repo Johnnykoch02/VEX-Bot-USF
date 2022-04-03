@@ -29,3 +29,4 @@ bool posInRange(float x, float y);
 
 void updatePower(float x, float y, bool reversed,  bool *turnCompleted);
 // Externs
+void interruptHandlerFront();

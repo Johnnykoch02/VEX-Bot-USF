@@ -24,6 +24,7 @@ extern pros::ADIEncoder rightEncoder;
 extern pros::Imu imu;
 extern pros::ADIDigitalOut pneumaticsLeft;
 extern pros::ADIDigitalOut pneumaticsRight;
+extern pros::ADIDigitalIn limitFront;
 extern pros::Motor armFront;
 extern pros::Motor armBack;
 //Controllers
