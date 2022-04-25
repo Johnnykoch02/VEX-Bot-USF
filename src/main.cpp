@@ -19,8 +19,8 @@ void initialize() {
   driveMiddleRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
   driveBackLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
   driveMiddleRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-  armFront.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  armBack.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  armLeft.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  armRight.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   imu.tare();
   tare_encoders();
   pros::delay(1000);
@@ -37,9 +37,9 @@ void autonomous(void) {
                           };
 
   // SCHEDULING 
-  task_manager.addTask(new RoboTask(&task_vals[0][0], &task_vals[0][1], false, armPosFront, armPosBack, 100 ));
-  task_manager.addTask(new RoboTask(&task_vals[1][0], &task_vals[1][1], false, armPosFront, armPosBack, 100 ));
-  task_manager.addTask(new RoboTask(&task_vals[2][0], &task_vals[2][1], false, armPosFront,armPosBack, 100));
+  task_manager.addTask(new RoboTask(&task_vals[0][0], &task_vals[0][1], false, armPosFront, 100 ));
+  task_manager.addTask(new RoboTask(&task_vals[1][0], &task_vals[1][1], false, armPosFront, 100 ));
+  task_manager.addTask(new RoboTask(&task_vals[2][0], &task_vals[2][1], false, armPosFront, 100));
   while (true)
   {
     updateRoboMatrix();

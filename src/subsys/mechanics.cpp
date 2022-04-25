@@ -3,8 +3,8 @@
 #include "./API.h"
 // Helper Functions
 void setDrive(float leftPct, float rightPct) {
-  int left = (int) ((leftPct/100) * MAX_VOLTAGE);
-  int right = (int) ((rightPct/100) * MAX_VOLTAGE);
+  int left = (int) ((leftPct/100) * CURRENT_VOLTAGE);
+  int right = (int) ((rightPct/100) * CURRENT_VOLTAGE);
   driveFrontLeft.move_voltage(left);
   driveFrontRight.move_voltage(right);
   driveBackLeft.move_voltage(left);
@@ -18,28 +18,16 @@ void setDrive(float leftPct, float rightPct) {
 //     pneumaticsRight.set_value(liftState);
 // }
 
-void setArmPosBack(float targetPose) {
-  if (targetPose > maxArmPos) targetPose = maxArmPos;
-  else if (targetPose < minArmPos) targetPose = minArmPos;
-  if (targetPose >= minArmPos && targetPose <= maxArmPos) 
-  {
-    armErrorBack[0] = (targetPose - armPosBack);
-    float voltage = (kp_arm*armErrorBack[0]) + (kd_arm*(armErrorBack[0] - armErrorBack[1]));
-    armBack.move_voltage(voltage);
-    armErrorBack[1] = armErrorBack[0];
-  }
-    // && fabs(targetPose - maxArmPos) > 4 && fabs(targetPose - minArmPos) > 4)
-
      
-}
-void setArmPosFront(float targetPose) {
+void setArmPos(float targetPose) {
   if (targetPose > maxArmPos) targetPose = maxArmPos;
   else if (targetPose < minArmPos) targetPose = minArmPos;
   if (targetPose >= minArmPos && targetPose <= maxArmPos)//(targetPose >= minArmPos && targetPose <= maxArmPos) 
   {
     armErrorFront[0] = (targetPose - armPosFront);
     float voltage = (kp_arm*armErrorFront[0]);// + (kd_arm*(armErrorFront[0] - armErrorFront[1]));
-    armFront.move_voltage(voltage);
+    armLeft.move_voltage(voltage);
+    armRight.move_voltage(voltage);
     armErrorFront[1] = armErrorFront[0];
   }
     // && fabs(targetPose - maxArmPos) > 4 && fabs(targetPose - minArmPos) > 4)
@@ -54,7 +42,7 @@ void setController() {
   int rightJoystick = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
   if (abs(leftJoystick) < 5) leftJoystick = 0;
   if (abs(rightJoystick)<5) rightJoystick = 0;
-  setDrive(leftJoystick/127*100, rightJoystick/127*100);
+  setDrive(leftJoystick*abs(leftJoystick)/127, rightJoystick*abs(rightJoystick)/127);
 
   // bool pneumatics = controller.get_digital(pros::E_CONTROLLER_DIGITAL_X);
   // if (pneumatics == true)
@@ -63,10 +51,10 @@ void setController() {
   // }
   // setPneumatics();
 
-  int armAxisFront = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
-  setArmPosFront(80*armAxisFront + armPosFront);
-  int armAxisBack = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
-  setArmPosBack(80*armAxisBack + armPosBack);
+  // int armAxisFront = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+  // setArmPosFront(80*armAxisFront + armPosFront);
+  int armAxis = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+  setArmPos(80*armAxis + armPosFront);
   pros::delay(50);
 }
 
@@ -86,8 +74,7 @@ void updateRoboMatrix() {
     /* Update Robot Matrix */
     roboMatrix[0][0] = getAngle(); // ANGLE
 
-    armPosFront+= armFront.get_position();
-    armPosBack+= armBack.get_position();
+    armPosFront+= (armLeft.get_position() + armRight.get_position()) / 2;
 
     StraightVector[0] =  cos(DEG2RAD(roboMatrix[0][0]));
     StraightVector[1] =  sin(DEG2RAD(roboMatrix[0][0]));
@@ -147,8 +134,8 @@ void tare_encoders() {
   int b = driveFrontRight.tare_position();
   int c = driveBackLeft.tare_position();
   int d = driveBackRight.tare_position();
-  armFront.tare_position();
-  armBack.tare_position();
+  armLeft.tare_position();
+  armRight.tare_position();
   if (a + b + c + d != 4)
   {
     pros::lcd::set_text(4, "Something went wrong.");
@@ -257,8 +244,8 @@ void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
     {
       powerDelta[0] = 80;
       powerDelta[1] = 80;
-      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 15) * powerMod;
-      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 15) * powerMod;
+      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 5) * powerMod;
+      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 5) * powerMod;
     }
   // if (fabs(powerDelta[0]) < 10 .)
   // { /*Clamp Left Motor to 0% */
@@ -272,7 +259,7 @@ void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
     powerDelta[0] *=-1;
     powerDelta[1]*=-1;
   }
-  if(dTheta > 10 && displacement > 5) *turnCompleted = false;
+  if(fabs(dTheta) > 10 && displacement > 5) *turnCompleted = false;
 
 }
 

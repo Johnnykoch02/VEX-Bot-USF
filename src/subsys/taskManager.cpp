@@ -30,6 +30,7 @@ void TaskManager::run() {
     else if (tasks.isEmpty() == false)
     { /* Obtain the next task*/
         this->current_task = this->tasks.deque();
+        this->current_task->init();
     }
     else
     {/* Do Nothing?*/

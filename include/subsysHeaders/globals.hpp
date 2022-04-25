@@ -25,13 +25,14 @@ extern pros::Imu imu;
 extern pros::ADIDigitalOut pneumaticsLeft;
 extern pros::ADIDigitalOut pneumaticsRight;
 extern pros::ADIDigitalIn limitFront;
-extern pros::Motor armFront;
-extern pros::Motor armBack;
+extern pros::Motor armLeft;
+extern pros::Motor armRight;
 //Controllers
 extern pros::Controller controller;
 
 //Misc
 extern int const MAX_VOLTAGE;
+extern int CURRENT_VOLTAGE;
 extern int const MATRIX_LOCATION;
 extern int const ROBO_X;
 extern int const ROBO_Y;

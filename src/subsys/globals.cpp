@@ -12,9 +12,9 @@ pros::Motor driveMiddleLeft(2, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENC
 pros::Motor driveMiddleRight(9, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
 
 
-pros::Motor armFront(20, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor armLeft(20, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
 
-pros::Motor armBack(6, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor armRight(6, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
 
                             /*std::uint8_t iportTop, std::uint8_t iportBottom*/
 // pros::ADIEncoder leftEncoder(0,0, false);
@@ -31,7 +31,8 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // pros::Mutex mutex;
 
 // Global Variables
-int const MAX_VOLTAGE = 12000;
+int MAX_VOLTAGE = 12000;
+int CURRENT_VOLTAGE = 12000;
 int const MATRIX_LOCATION = 1;
 int const ROBO_X = 0;
 int const ROBO_Y = 1;
