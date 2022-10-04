@@ -42,7 +42,7 @@ void setController() {
   int rightJoystick = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
   if (abs(leftJoystick) < 5) leftJoystick = 0;
   if (abs(rightJoystick)<5) rightJoystick = 0;
-  setDrive(leftJoystick*abs(leftJoystick)/127, rightJoystick*abs(rightJoystick)/127);
+  setDrive(leftJoystick*abs(leftJoystick)/138, rightJoystick*abs(rightJoystick) / 138);
 
   // bool pneumatics = controller.get_digital(pros::E_CONTROLLER_DIGITAL_X);
   // if (pneumatics == true)
@@ -54,7 +54,7 @@ void setController() {
   // int armAxisFront = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
   // setArmPosFront(80*armAxisFront + armPosFront);
   int armAxis = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) - controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
-  setArmPos(80*armAxis + armPosFront);
+  setArmPos(260*armAxis + armPosFront);
   pros::delay(50);
 }
 
@@ -92,7 +92,15 @@ void updateRoboMatrix() {
       interruptHandlerFront();
     }
 
-    pros::lcd::set_text(3, std::to_string(roboMatrix[1][0]) + " " + std::to_string(roboMatrix[1][1]));
+      bool pneumatics = controller.get_digital(pros::E_CONTROLLER_DIGITAL_X);
+    if (pneumatics == true)
+    {
+      task_manager.ClearAllTasks();
+    }
+
+
+
+    // pros::lcd::set_text(3, std::to_string(roboMatrix[1][0]) + " " + std::to_string(roboMatrix[1][1]));
 
 
   delete[] resultantVector;
@@ -159,7 +167,7 @@ void move_to(float x, float y, bool reversed, bool *turnCompleted) {
   if (!*turnCompleted) change_orientation(x,y,reversed, turnCompleted);
   else updatePower(x, y, reversed, turnCompleted);
   setDrive(powerDelta[0], powerDelta[1]);
-  pros::delay(20);
+  // pros::delay(20);
 }
 
 void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
@@ -187,9 +195,11 @@ void change_orientation(float x, float y, bool reversed,  bool *turnCompleted) {
   powerDelta[1] =  kp_angle * errorPower[0] + ki_angle * errorPower[0] + kd_angle * (errorPower[0] - errorPower[1]);
 
 
-  pros::lcd::set_text(3, std::to_string(powerDelta[0]) + " :P: " + std::to_string(powerDelta[1]));
+  pros::lcd::set_text(3, "Turning Movement: " + std::to_string(displacement));
   if (fabs(errorPower[0] - errorPower[1]) < 0.25) {
     *turnCompleted = true;
+    errorPower[0] = 0;
+    errorPower[1] = 0;
   }
   errorPower[1] = errorPower[0];
 
@@ -226,26 +236,29 @@ void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
 
   float dTheta = get_dTheta(RAD2DEG(atan2(dy,dx)), fmod(roboMatrix[0][0] + angleModification, 360.0));
   float omega = fabs((roboMatrix[0][0] - oldRoboMatrix[0][0]) / (timeMatrix[0] - timeMatrix[1]));
+  errorPower[0] = displacement;
 
-
-  if (fabs(fabs(dTheta) - 180.0) <= 4.0 && displacement < 4.0)
+  if (fabs(fabs(dTheta) - 180.0) <= 4.0 && displacement < 10.0)
   { /* Robot has most likely overshot its target */
-    powerDelta[0] =-1 * (kp_pos * (displacement) + ki_pos*displacement  - 16 * dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0]);
-    powerDelta[1] = -1 * (kp_pos * (displacement) + ki_pos*displacement +  16*dTheta - kd_pos* ( 1 / displacement)* fabs(powerDelta[1])/powerDelta[1]);
+   pros::lcd::set_text(3, "Overshot Movement: " + std::to_string(displacement));
+    powerDelta[0] = -1 * min(kp_pos * (displacement) + ki_pos*displacement*displacement  + kd_pos* (errorPower[0] - errorPower[1]), 100);
+    powerDelta[1] = -1 * min(kp_pos * (displacement) + ki_pos*displacement*displacement + kd_pos* (errorPower[0] - errorPower[1]), 100);
+
+
   }
   else
   {/* Robot is moving Straight on a position */
     pros::lcd::set_text(3, "Straight Movement: " + std::to_string(displacement));
-    powerDelta[0] = min(kp_pos * (displacement) + ki_pos*displacement*displacement  - kd_pos* ( 1 / displacement)* fabs(powerDelta[0])/powerDelta[0], 100);
-    powerDelta[1] = min(kp_pos * (displacement) + ki_pos*displacement*displacement - kd_pos* ( 1 /displacement)* fabs(powerDelta[1])/powerDelta[1], 100);
+    powerDelta[0] = min(kp_pos * (displacement) + ki_pos*displacement*displacement  + kd_pos* (errorPower[0] - errorPower[1]), 100);
+    powerDelta[1] = min(kp_pos * (displacement) + ki_pos*displacement*displacement + kd_pos* (errorPower[0] - errorPower[1]),  100);
 
     /* Adjust Power by any error in the approach angle */
-    if(displacement > 5 && fabs(dTheta) > 3.0)
+    if(displacement > 10 && fabs(dTheta) > 3.0)
     {
       powerDelta[0] = 80;
       powerDelta[1] = 80;
-      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 5) * powerMod;
-      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 5) * powerMod;
+      powerDelta[0] -= fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25) * powerMod;
+      powerDelta[1] += fabs(dTheta)/dTheta * min((displacement*displacement/fabs(dTheta)), 25) * powerMod;
     }
   // if (fabs(powerDelta[0]) < 10 .)
   // { /*Clamp Left Motor to 0% */
@@ -259,7 +272,9 @@ void updatePower(float x, float y, bool reversed, bool *turnCompleted) {
     powerDelta[0] *=-1;
     powerDelta[1]*=-1;
   }
-  if(fabs(dTheta) > 10 && displacement > 5) *turnCompleted = false;
+  if(fabs(dTheta) > 10 && fabs(displacement) > 15) *turnCompleted = false;
+
+  errorPower[1] = errorPower[0];
 
 }
 
@@ -269,7 +284,7 @@ bool posInRange(float x, float y) {
       (roboMatrix[1][0] - x)* (roboMatrix[1][0] - x) + //DX^2
       (roboMatrix[1][1] - y) * (roboMatrix[1][1] - y) //DY^2
     )
-    < 0.8; //INCHES
+    < 3.8; //INCHES
 }
 
 void interruptHandlerFront() {

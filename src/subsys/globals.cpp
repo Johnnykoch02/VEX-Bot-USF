@@ -12,9 +12,9 @@ pros::Motor driveMiddleLeft(2, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENC
 pros::Motor driveMiddleRight(9, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
 
 
-pros::Motor armLeft(20, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor armLeft(15, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
 
-pros::Motor armRight(6, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor armRight(11, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
 
                             /*std::uint8_t iportTop, std::uint8_t iportBottom*/
 // pros::ADIEncoder leftEncoder(0,0, false);
@@ -31,8 +31,8 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // pros::Mutex mutex;
 
 // Global Variables
-int MAX_VOLTAGE = 12000;
-int CURRENT_VOLTAGE = 12000;
+int const MAX_VOLTAGE = 18000;
+int CURRENT_VOLTAGE = 18000;
 int const MATRIX_LOCATION = 1;
 int const ROBO_X = 0;
 int const ROBO_Y = 1;
@@ -47,7 +47,7 @@ bool liftState = false;
 float armPosFront = 0.0;
 float armPosBack = 0.0;
 int minArmPos = 0;
-int maxArmPos = 5500;
+int maxArmPos = 6200;
 bool tryingToStop = false;
 
 float errorPower[2];
@@ -56,9 +56,9 @@ float armErrorBack[2];
 float powerDelta[2] = {0.1, 0.1};
 
 //K-Values for PID
-float kp_pos = (13/2);
-float ki_pos = (31/5);
-float kd_pos = 12;
+float kp_pos = (9/3);
+float ki_pos = (5/3);
+float kd_pos = 10;
 float kp_angle = 1.2;
 float ki_angle = 0.4;
 float kd_angle = 1.0;//20.5;

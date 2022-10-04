@@ -14,7 +14,11 @@ class GameObject {
     float height;
     float * y;
     int type;
-    
+    ~GameObject() {
+        delete this->x;
+        delete this->y;
+    }
+
     GameObject(float x, float y, std::string identifier, int type, float width, float height) {
         this->x[0] = x;
         this->y[0] = y;
@@ -30,11 +34,7 @@ class GameObject {
     }
 
     bool checkID(std::string identifier) { 
-         for (int i = 0; i < identifier.length(); i++) {
-            if (i < this->identifier.length())
-             if (this->identifier[i] == identifier[i]) continue;
-            else return false;
-        }
+        if (this->identifier != identifier) return false;
 
         return true;
     }

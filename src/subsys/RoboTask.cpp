@@ -66,7 +66,7 @@ RoboTask::RoboTask(float *x, float *y, bool reversed,  float armFront,  float ti
     operationsCompleted++;
     if(this->armFront != armPosFront) {
         setArmPos(this->armFront);
-      if (fabs(this->armFront - armPosFront) < 220) operationsCompleted++;
+      if (fabs(this->armFront - armPosFront) < 120) operationsCompleted++;
   } else operationsCompleted++;
     pros::lcd::set_text(7,std::to_string(operationsCompleted)+" of " + std::to_string(this->totalOperations));
 
@@ -82,10 +82,10 @@ RoboTask::RoboTask(float *x, float *y, bool reversed,  float armFront,  float ti
 }
 
  void RoboTask::init() {
-   if(get<0>(this->var_changes) == "") {
+   if(get<0>(this->var_changes).compare("") == 0) {
        //null string
    }
-   else if (get<0>(this->var_changes) == "voltage") {
+   else if (get<0>(this->var_changes).compare("voltage") == 0) {
        CURRENT_VOLTAGE = get<1>(this->var_changes);
    }
  }
